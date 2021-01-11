@@ -22,8 +22,14 @@ object CertificatePinning {
     val configuration = CertificatePinner.Builder()
             .add(
                     BuildConfig.serverDomain,
-                    "sha256/sRHdihwgkaib1P1gxX8HFszlD+7/gTfNvuAybgLPNis=",
-                    "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg="
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-e1.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/J2/oqMTsdhFWW/n85tys6b4yDBtb6idZayIEBx7QTxA=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-r4.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/5VReIRNHJBiRxVSgOTTN6bdJZkpZ0m1hX+WPd5kPLQM=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-e2.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/vZNucrIS7293MQLGt304+UKXMi78JTlrwyeUIuDIknA="
             )
             // This is theoretically not required because the fallback happens at
             // the DNS query level => original domain is assumed for certificate verification.
@@ -31,8 +37,14 @@ object CertificatePinning {
             // a host pinning for the other domain.
             .add(
                     BuildConfig.backupServerDomain,
-                    "sha256/sRHdihwgkaib1P1gxX8HFszlD+7/gTfNvuAybgLPNis=",
-                    "sha256/YLh1dUR9y6Kja30RrAn7JKnbQG/uEtLMkBgFF2Fuihg="
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-r3.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/jQJTbIh0grw0/1TkHSumWb+Fs0Ggogr621gT3PvPKG0=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-e1.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/J2/oqMTsdhFWW/n85tys6b4yDBtb6idZayIEBx7QTxA=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-r4.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/5VReIRNHJBiRxVSgOTTN6bdJZkpZ0m1hX+WPd5kPLQM=",
+                    // echo -n "sha256/"; curl -s https://letsencrypt.org/certs/lets-encrypt-e2.pem | openssl x509 -pubkey | openssl pkey -pubin -outform der | openssl dgst -sha256 -binary | base64
+                    "sha256/vZNucrIS7293MQLGt304+UKXMi78JTlrwyeUIuDIknA="
             )
             .build()
 }
