@@ -346,6 +346,8 @@
     <string name="time_warning_desc">Wenn weniger Zeit als ausgewählt übrig ist, dann wird eine Benachrichtigung angezeigt</string>
 
     <string name="time_warning_not_title">Zeitwarnung für %s</string>
+    <string name="time_warning_not_title_session">Sitzungsdauerwarnung für %s</string>
+    <string name="time_warning_not_title_blocked_time_area">Sperrzeitwarnung für %s</string>
 
     <string name="child_apps_title">Apps</string>
     <string name="child_apps_sort_by_category">Nach Kategorie sortieren</string>

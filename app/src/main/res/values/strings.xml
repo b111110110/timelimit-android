@@ -390,6 +390,8 @@
     <string name="time_warning_desc">If there is less time remaining than checked, then a notification will be shown</string>
 
     <string name="time_warning_not_title">Time warning for %s</string>
+    <string name="time_warning_not_title_session">Session duration warning for %s</string>
+    <string name="time_warning_not_title_blocked_time_area">Blocked time area warning for %s</string>
 
     <string name="child_apps_title">Apps</string>
     <string name="child_apps_sort_by_category">Sort by category</string>

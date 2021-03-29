@@ -30,7 +30,10 @@ import io.timelimit.android.data.model.ExperimentalFlags
 import io.timelimit.android.data.model.UserType
 import io.timelimit.android.data.model.derived.UserRelatedData
 import io.timelimit.android.date.DateInTimezone
+import io.timelimit.android.date.getMinuteOfWeek
+import io.timelimit.android.extensions.MinuteOfDay
 import io.timelimit.android.extensions.flattenToSet
+import io.timelimit.android.extensions.nextBlockedMinuteOfWeek
 import io.timelimit.android.integration.platform.AppStatusMessage
 import io.timelimit.android.integration.platform.NetworkId
 import io.timelimit.android.integration.platform.ProtectionLevel
@@ -120,6 +123,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
     private var previousMainLogicExecutionTime = 0
     private var previousMainLoopEndTime = 0L
     private var previousAudioPlaybackBlock: Pair<Long, String>? = null
+    private var previousMinuteOfWeek = -1
     private val dayChangeTracker = DayChangeTracker(
             timeApi = appLogic.timeApi,
             longDuration = 1000 * 60 * 10 /* 10 minutes */
@@ -246,6 +250,9 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                 val nowTimezone = TimeZone.getTimeZone(userRelatedData.user.timeZone)
 
                 val nowDate = DateInTimezone.getLocalDate(nowTimestamp, nowTimezone)
+                val nowMinuteOfWeek = getMinuteOfWeek(nowTimestamp, nowTimezone)
+                val lastMinuteOfWeek = previousMinuteOfWeek.let { if (it < 0) nowMinuteOfWeek else it }
+                previousMinuteOfWeek = nowMinuteOfWeek
                 val dayOfEpoch = nowDate.toEpochDay().toInt()
 
                 // eventually remove old used time data
@@ -379,16 +386,53 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         val oldSessionDuration = handling.remainingSessionDuration?.let { it - timeToSubtractForCategory }
 
                         // trigger time warnings
+                        fun showTimeWarningNotification(title: Int, roundedNewTime: Long) {
+                            appLogic.platformIntegration.showTimeWarningNotification(
+                                    title = appLogic.context.getString(title, category.title),
+                                    text = TimeTextUtil.remaining(roundedNewTime.toInt(), appLogic.context)
+                            )
+                        }
+
                         if (oldRemainingTime / (1000 * 60) != newRemainingTime / (1000 * 60)) {
                             // eventually show remaining time warning
                             val roundedNewTime = ((newRemainingTime / (1000 * 60)) + 1) * (1000 * 60)
                             val flagIndex = CategoryTimeWarnings.durationToBitIndex[roundedNewTime]
 
                             if (flagIndex != null && category.timeWarnings and (1 shl flagIndex) != 0) {
-                                appLogic.platformIntegration.showTimeWarningNotification(
-                                        title = appLogic.context.getString(R.string.time_warning_not_title, category.title),
-                                        text = TimeTextUtil.remaining(roundedNewTime.toInt(), appLogic.context)
-                                )
+                                showTimeWarningNotification(title = R.string.time_warning_not_title, roundedNewTime = roundedNewTime)
+                            }
+                        }
+
+                        if (oldSessionDuration != null) {
+                            val newSessionDuration = oldSessionDuration - timeToSubtract
+                            // eventually show session duration warning
+                            if (oldSessionDuration / (1000 * 60) != newSessionDuration / (1000 * 60)) {
+                                val roundedNewTime = ((newSessionDuration / (1000 * 60)) + 1) * (1000 * 60)
+                                val flagIndex = CategoryTimeWarnings.durationToBitIndex[roundedNewTime]
+
+                                if (flagIndex != null && category.timeWarnings and (1 shl flagIndex) != 0) {
+                                    showTimeWarningNotification(title = R.string.time_warning_not_title_session, roundedNewTime = roundedNewTime)
+                                }
+                            }
+                        }
+
+                        if (handling.okByBlockedTimeAreas && nowMinuteOfWeek != lastMinuteOfWeek) {
+                            val nextBlockedMinute = handling.createdWithCategoryRelatedData.nextBlockedMinuteOfWeek(nowMinuteOfWeek) ?: run {
+                                handling.createdWithCategoryRelatedData.nextBlockedMinuteOfWeek(0)?.let { MinuteOfDay.LENGTH * 7 + it }
+                            }
+
+                            if (BuildConfig.DEBUG) {
+                                Log.d(LOG_TAG, "next blocked minute: $nextBlockedMinute (current: $nowMinuteOfWeek)")
+                            }
+
+                            if (nextBlockedMinute != null) {
+                                val minutesUntilNextBlockedMinute = nextBlockedMinute - nowMinuteOfWeek
+                                val msUntilNextBlocking = minutesUntilNextBlockedMinute.toLong() * 1000 * 60
+                                val flagIndex = CategoryTimeWarnings.durationToBitIndex[msUntilNextBlocking]
+
+                                if (flagIndex != null && category.timeWarnings and (1 shl flagIndex) != 0) {
+                                    showTimeWarningNotification(title = R.string.time_warning_not_title_blocked_time_area, roundedNewTime = msUntilNextBlocking)
+                                }
                             }
                         }
 
