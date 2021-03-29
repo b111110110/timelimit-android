@@ -1,6 +1,4 @@
-- adjustments for new in app API (only in the play store builds)
+- changes
+  - time warnings are shown for blocked time areas and session duration limitations now
 - bug fixes
-  - crashes in the time limit rule editor
-  - crashes in the text input dialog
-  - crashes in the widget
-- updated dependencies
+  - app list sorting by name did not work
