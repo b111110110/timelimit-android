@@ -1237,10 +1237,10 @@
     <string name="purchase_info_assigned_to_account">
         The purchase is assigned to your family and is valid on all devices.
         The family are all devices which are linked to this device now and in the future.
-        For apps and in-app products offered through Google Play, the transaction fee is equivalent to 30% of the price.
+        For apps and in-app products offered through Google Play, the transaction fee is equivalent to 15% to 30% of the price.
     </string>
     <string name="purchase_sla_provision_info">
-        For apps and in-app products offered through Google Play, the transaction fee is equivalent to 30% of the price.
+        For apps and in-app products offered through Google Play, the transaction fee is equivalent to 15% to 30% of the price.
     </string>
     <string name="purchase_one_month">Premium version for one month</string>
     <string name="purchase_one_year">Premium version for one year</string>
