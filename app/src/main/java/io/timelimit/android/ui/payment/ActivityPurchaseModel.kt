@@ -82,8 +82,12 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
             val initBillingClient = _billingClient!!
 
             suspendCoroutine<Unit?> { continuation ->
+                var resumed = false
+
                 initBillingClient.startConnection(object : BillingClientStateListener {
                     override fun onBillingSetupFinished(billingResult: BillingResult) {
+                        if (resumed) return
+
                         try {
                             billingResult.assertSuccess()
 
@@ -96,6 +100,8 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
                             }
 
                             continuation.resumeWithException(BillingNotSupportedException())
+                        } finally {
+                            resumed = true
                         }
                     }
 
