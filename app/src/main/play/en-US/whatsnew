@@ -1,4 +1,2 @@
-- changes
-  - time warnings are shown for blocked time areas and session duration limitations now
 - bug fixes
-  - app list sorting by name did not work
+  - fix crashes during interactions with the in app purchase service

@@ -1,4 +1,2 @@
-- Änderungen
-  - Zeitwarnungen werden auch für Sperrzeiten und Sitzungsdauerbegrenzungen angezeigt
 - Fehlerbehebungen
-  - Sortierung der App-Liste nach dem Namen hat nicht funktioniert
+  - Abstürze bei der Interaktion mit dem In-App-Kauf-Dienst behoben
