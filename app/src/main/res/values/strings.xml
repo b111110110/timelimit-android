@@ -120,6 +120,9 @@
     <string name="add_device">Add device</string>
     <string name="add_device_info">
         Enter the code at the device which you would like to add.
+        You can enter the code ONLY during the setup of TimeLimit and only if you chose to link
+        the device using a code. You can not enter this code later - you must reinstall TimeLimit at
+        the other device in this case.
     </string>
     <string name="add_device_success">The device %s was added</string>
 

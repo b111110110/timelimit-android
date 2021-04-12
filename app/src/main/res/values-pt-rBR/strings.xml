@@ -69,9 +69,6 @@
     <string name="about_source_title">Código fonte</string>
 
     <string name="add_device">Adicionar dispositivo</string>
-    <string name="add_device_info">
-        Digite o código no dispositivo que você gostaria de adicionar.
-    </string>
     <string name="add_device_success">O dispositivo %s foi adicionado</string>
 
     <string name="add_used_time_title">Adicionar duração de uso</string>

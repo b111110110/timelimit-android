@@ -75,6 +75,10 @@
     <string name="add_device">Gerät hinzufügen</string>
     <string name="add_device_info">
         Geben Sie diesen Code an dem Gerät ein, das Sie hinzufügen möchten.
+        Sie können den Code NUR bei der Einrichtung von TimeLimit angeben und müssen dafür
+        auswählen, dass Sie eine Verknüpfung mit einer bestehenden Installation mit einem Code
+        durchführen möchten. Eine spätere Verknüpfung ist nicht möglich - dann muss TimeLimit am
+        anderen Gerät neu installiert werden.
     </string>
     <string name="add_device_success">Das Gerät %s wurde hinzugefügt</string>
 
