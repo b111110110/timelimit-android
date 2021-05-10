@@ -828,7 +828,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
 
     fun syncDeviceStatusAsync() {
         runAsync {
-            syncDeviceStatus()
+            syncDeviceStatusFast()
         }
     }
 
@@ -836,7 +836,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
         while (true) {
             appLogic.deviceEntryIfEnabled.waitUntilValueMatches { it != null }
 
-            syncDeviceStatus()
+            syncDeviceStatusSlow()
 
             appLogic.timeApi.sleep(CHECK_PERMISSION_INTERVAL)
         }
@@ -860,65 +860,92 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
         }
     }
 
-    private suspend fun syncDeviceStatus() {
+    private suspend fun getUpdateDeviceStatusAction(): UpdateDeviceStatusAction {
+        val deviceEntry = appLogic.deviceEntry.waitForNullableValue()
+
+        var changes = UpdateDeviceStatusAction.empty
+
+        if (deviceEntry != null) {
+            val protectionLevel = appLogic.platformIntegration.getCurrentProtectionLevel()
+            val usageStatsPermission = appLogic.platformIntegration.getForegroundAppPermissionStatus()
+            val notificationAccess = appLogic.platformIntegration.getNotificationAccessPermissionStatus()
+            val overlayPermission = appLogic.platformIntegration.getOverlayPermissionStatus()
+            val accessibilityService = appLogic.platformIntegration.isAccessibilityServiceEnabled()
+            val qOrLater = AndroidVersion.qOrLater
+
+            if (protectionLevel != deviceEntry.currentProtectionLevel) {
+                changes = changes.copy(
+                        newProtectionLevel = protectionLevel
+                )
+
+                if (protectionLevel == ProtectionLevel.DeviceOwner) {
+                    appLogic.platformIntegration.setEnableSystemLockdown(true)
+                }
+            }
+
+            if (usageStatsPermission != deviceEntry.currentUsageStatsPermission) {
+                changes = changes.copy(
+                        newUsageStatsPermissionStatus = usageStatsPermission
+                )
+            }
+
+            if (notificationAccess != deviceEntry.currentNotificationAccessPermission) {
+                changes = changes.copy(
+                        newNotificationAccessPermission = notificationAccess
+                )
+            }
+
+            if (overlayPermission != deviceEntry.currentOverlayPermission) {
+                changes = changes.copy(
+                        newOverlayPermission = overlayPermission
+                )
+            }
+
+            if (accessibilityService != deviceEntry.accessibilityServiceEnabled) {
+                changes = changes.copy(
+                        newAccessibilityServiceEnabled = accessibilityService
+                )
+            }
+
+            if (qOrLater && !deviceEntry.qOrLater) {
+                changes = changes.copy(isQOrLaterNow = true)
+            }
+        }
+
+        return changes
+    }
+
+    private suspend fun syncDeviceStatusFast() {
         syncDeviceStatusLock.withLock {
-            val deviceEntry = appLogic.deviceEntry.waitForNullableValue()
+            val changes = getUpdateDeviceStatusAction()
 
-            if (deviceEntry != null) {
-                val protectionLevel = appLogic.platformIntegration.getCurrentProtectionLevel()
-                val usageStatsPermission = appLogic.platformIntegration.getForegroundAppPermissionStatus()
-                val notificationAccess = appLogic.platformIntegration.getNotificationAccessPermissionStatus()
-                val overlayPermission = appLogic.platformIntegration.getOverlayPermissionStatus()
-                val accessibilityService = appLogic.platformIntegration.isAccessibilityServiceEnabled()
-                val qOrLater = AndroidVersion.qOrLater
+            if (changes != UpdateDeviceStatusAction.empty) {
+                ApplyActionUtil.applyAppLogicAction(
+                        action = changes,
+                        appLogic = appLogic,
+                        ignoreIfDeviceIsNotConfigured = true
+                )
+            }
+        }
+    }
 
-                var changes = UpdateDeviceStatusAction.empty
+    private suspend fun syncDeviceStatusSlow() {
+        syncDeviceStatusLock.withLock {
+            val changesOne = getUpdateDeviceStatusAction()
 
-                if (protectionLevel != deviceEntry.currentProtectionLevel) {
-                    changes = changes.copy(
-                            newProtectionLevel = protectionLevel
-                    )
+            delay(2000)
 
-                    if (protectionLevel == ProtectionLevel.DeviceOwner) {
-                        appLogic.platformIntegration.setEnableSystemLockdown(true)
-                    }
-                }
+            val changesTwo = getUpdateDeviceStatusAction()
 
-                if (usageStatsPermission != deviceEntry.currentUsageStatsPermission) {
-                    changes = changes.copy(
-                            newUsageStatsPermissionStatus = usageStatsPermission
-                    )
-                }
-
-                if (notificationAccess != deviceEntry.currentNotificationAccessPermission) {
-                    changes = changes.copy(
-                            newNotificationAccessPermission = notificationAccess
-                    )
-                }
-
-                if (overlayPermission != deviceEntry.currentOverlayPermission) {
-                    changes = changes.copy(
-                            newOverlayPermission = overlayPermission
-                    )
-                }
-
-                if (accessibilityService != deviceEntry.accessibilityServiceEnabled) {
-                    changes = changes.copy(
-                            newAccessibilityServiceEnabled = accessibilityService
-                    )
-                }
-
-                if (qOrLater && !deviceEntry.qOrLater) {
-                    changes = changes.copy(isQOrLaterNow = true)
-                }
-
-                if (changes != UpdateDeviceStatusAction.empty) {
-                    ApplyActionUtil.applyAppLogicAction(
-                            action = changes,
-                            appLogic = appLogic,
-                            ignoreIfDeviceIsNotConfigured = true
-                    )
-                }
+            if (
+                    changesOne != UpdateDeviceStatusAction.empty &&
+                    changesOne == changesTwo
+            ) {
+                ApplyActionUtil.applyAppLogicAction(
+                        action = changesOne,
+                        appLogic = appLogic,
+                        ignoreIfDeviceIsNotConfigured = true
+                )
             }
         }
     }
