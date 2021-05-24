@@ -58,7 +58,7 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
             val newIds = handlings.map { it.createdWithCategoryRelatedData.category.id }.toSet()
             val oldIds = categoryIds
 
-            maxTimeToAdd = handlings.minBy { it.maxTimeToAdd }?.maxTimeToAdd ?: Long.MAX_VALUE
+            maxTimeToAdd = handlings.minByOrNull { it.maxTimeToAdd }?.maxTimeToAdd ?: Long.MAX_VALUE
             categoryIds = newIds
 
             if (lastCategoryHandlings.size != handlings.size) {

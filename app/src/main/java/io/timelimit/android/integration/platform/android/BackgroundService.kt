@@ -92,7 +92,7 @@ class BackgroundService: Service() {
                                                 context,
                                                 PendingIntentIds.SWITCH_TO_DEFAULT_USER,
                                                 BackgroundActionService.prepareSwitchToDefaultUser(context),
-                                                PendingIntent.FLAG_UPDATE_CURRENT
+                                                PendingIntentIds.PENDING_INTENT_FLAGS
                                         )
                                 ).build()
                         )

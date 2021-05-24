@@ -381,7 +381,7 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
                     context,
                     PendingIntentIds.REVOKE_TEMPORARILY_ALLOWED,
                     BackgroundActionService.prepareRevokeTemporarilyAllowed(context),
-                    PendingIntent.FLAG_UPDATE_CURRENT
+                    PendingIntentIds.PENDING_INTENT_FLAGS
             )
 
             val notification = NotificationCompat.Builder(context, NotificationChannels.APP_STATUS)

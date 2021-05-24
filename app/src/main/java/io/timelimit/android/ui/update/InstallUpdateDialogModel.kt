@@ -158,7 +158,7 @@ class InstallUpdateDialogModel(application: Application): AndroidViewModel(appli
                                 application,
                                 PendingIntentIds.UPDATE_STATUS,
                                 Intent(action).setPackage(BuildConfig.APPLICATION_ID),
-                                0
+                                PendingIntentIds.PENDING_INTENT_FLAGS
                         ).intentSender
                 )
 
