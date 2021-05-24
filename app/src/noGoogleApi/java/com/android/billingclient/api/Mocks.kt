@@ -32,7 +32,7 @@ object BillingClient {
     fun launchBillingFlow(activity: Activity, params: BillingFlowParams) = BillingResult
     fun acknowledgePurchase(params: AcknowledgePurchaseParams) = BillingResult
     fun consumePurchase(params: ConsumeParams) = BillingResult
-    fun queryPurchases(type: String) = QueryPurchasesResult
+    suspend fun queryPurchasesAsync(type: String) = QueryPurchasesResult
 
     object BillingResponseCode {
         const val OK = 0
@@ -74,7 +74,7 @@ object SkuDetailsParams {
 object Purchase {
     const val purchaseState = PurchaseState.PURCHASED
     const val isAcknowledged = true
-    const val sku = ""
+    val skus = listOf("")
     const val purchaseToken = ""
     const val originalJson = ""
     const val signature = ""
@@ -113,7 +113,7 @@ object BillingFlowParams {
 
 object QueryPurchasesResult {
     val billingResult = BillingResult
-    val purchasesList: List<Purchase>? = emptyList()
+    val purchasesList: List<Purchase> = emptyList()
 }
 
 data class QuerySkuDetailsResult(val billingResult: BillingResult, val details: List<SkuDetails>?) {
