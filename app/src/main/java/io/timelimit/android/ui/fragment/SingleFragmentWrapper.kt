@@ -23,41 +23,40 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import io.timelimit.android.R
+import io.timelimit.android.databinding.SingleFragmentWrapperBinding
 import io.timelimit.android.livedata.liveDataFromNonNullValue
 import io.timelimit.android.ui.main.ActivityViewModelHolder
 import io.timelimit.android.ui.main.AuthenticationFab
-import kotlinx.android.synthetic.main.single_fragment_wrapper.*
 
 abstract class SingleFragmentWrapper: Fragment() {
     val activity: ActivityViewModelHolder by lazy { getActivity() as ActivityViewModelHolder }
     private lateinit var navController: NavController
+    protected lateinit var binding: SingleFragmentWrapperBinding
 
     protected val navigation get() = navController
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         navController = Navigation.findNavController(container!!)
 
-        return inflater.inflate(R.layout.single_fragment_wrapper, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        binding = SingleFragmentWrapperBinding.inflate(inflater, container, false)
 
         AuthenticationFab.manageAuthenticationFab(
-                fab = fab,
+                fab = binding.fab,
                 fragment = this,
                 shouldHighlight = activity.getActivityViewModel().shouldHighlightAuthenticationButton,
                 authenticatedUser = activity.getActivityViewModel().authenticatedUser,
                 doesSupportAuth = liveDataFromNonNullValue(showAuthButton)
         )
 
-        fab.setOnClickListener { activity.showAuthenticationScreen() }
+        binding.fab.setOnClickListener { activity.showAuthenticationScreen() }
 
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction()
                     .replace(R.id.container, createChildFragment())
                     .commit()
         }
+
+        return binding.root
     }
 
     abstract fun createChildFragment(): Fragment

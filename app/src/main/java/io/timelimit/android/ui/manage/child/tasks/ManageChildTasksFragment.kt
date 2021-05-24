@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import io.timelimit.android.R
 import io.timelimit.android.data.model.ChildTask
+import io.timelimit.android.databinding.RecyclerFragmentBinding
 import io.timelimit.android.sync.actions.UpdateChildTaskAction
 import io.timelimit.android.ui.main.getActivityViewModel
-import kotlinx.android.synthetic.main.recycler_fragment.*
 
 class ManageChildTasksFragment: Fragment(), EditTaskDialogFragment.Listener {
     companion object {
@@ -54,16 +54,11 @@ class ManageChildTasksFragment: Fragment(), EditTaskDialogFragment.Listener {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.recycler_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        val binding = RecyclerFragmentBinding.inflate(inflater, container, false)
         val adapter = ChildTaskAdapter()
 
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = adapter
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.recycler.adapter = adapter
 
         model.listContent.observe(viewLifecycleOwner) { adapter.data = it }
         model.isChildTheCurrentDeviceUser.observe(viewLifecycleOwner) {/* keep the value fresh */}
@@ -100,7 +95,9 @@ class ManageChildTasksFragment: Fragment(), EditTaskDialogFragment.Listener {
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) { model.hideIntro() }
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean = throw IllegalStateException()
-        }).attachToRecyclerView(recycler)
+        }).attachToRecyclerView(binding.recycler)
+
+        return binding.root
     }
 
     override fun onTaskRemoved(task: ChildTask) {

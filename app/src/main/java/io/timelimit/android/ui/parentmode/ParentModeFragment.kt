@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import io.timelimit.android.R
+import io.timelimit.android.databinding.ParentModeFragmentBinding
 import io.timelimit.android.ui.overview.about.AboutFragment
-import kotlinx.android.synthetic.main.parent_mode_fragment.*
 
 class ParentModeFragment : Fragment() {
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.parent_mode_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val binding = ParentModeFragmentBinding.inflate(inflater, container, false)
 
         if (savedInstanceState == null) {
             childFragmentManager.beginTransaction()
@@ -39,7 +35,7 @@ class ParentModeFragment : Fragment() {
                     .commitNow()
         }
 
-        bottom_navigation_view.setOnNavigationItemSelectedListener { menuItem ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { menuItem ->
             if (childFragmentManager.isStateSaved) {
                 false
             } else {
@@ -56,5 +52,7 @@ class ParentModeFragment : Fragment() {
                 true
             }
         }
+
+        return binding.root
     }
 }

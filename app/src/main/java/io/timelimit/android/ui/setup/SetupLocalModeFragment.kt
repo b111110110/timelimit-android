@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.ui.mustread.MustReadFragment
 import io.timelimit.android.ui.update.UpdateConsentCard
 import io.timelimit.android.update.UpdateUtil
-import kotlinx.android.synthetic.main.fragment_setup_local_mode.*
 
 class SetupLocalModeFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -69,7 +68,7 @@ class SetupLocalModeFragment : Fragment() {
 
         binding.nextBtn.setOnClickListener {
             model.trySetupWithPassword(
-                    set_password_view.readPassword(),
+                    binding.setPasswordView.readPassword(),
                     SetupNetworkTimeVerification.readSelection(binding.networkTimeVerification),
                     enableUpdateChecks = binding.update.enableSwitch.isChecked
             )

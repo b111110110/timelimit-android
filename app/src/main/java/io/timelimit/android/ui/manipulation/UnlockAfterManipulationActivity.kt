@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,16 +21,15 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import io.timelimit.android.R
 import io.timelimit.android.async.Threads
 import io.timelimit.android.data.model.UserType
+import io.timelimit.android.databinding.ActivityUnlockAfterManipulationBinding
 import io.timelimit.android.extensions.showSafe
 import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.ui.backdoor.BackdoorDialogFragment
 import io.timelimit.android.ui.login.NewLoginFragment
 import io.timelimit.android.ui.main.ActivityViewModel
 import io.timelimit.android.ui.main.ActivityViewModelHolder
-import kotlinx.android.synthetic.main.activity_unlock_after_manipulation.*
 
 class UnlockAfterManipulationActivity : AppCompatActivity(), ActivityViewModelHolder {
     private val model: ActivityViewModel by lazy {
@@ -42,7 +41,9 @@ class UnlockAfterManipulationActivity : AppCompatActivity(), ActivityViewModelHo
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_unlock_after_manipulation)
+
+        val binding = ActivityUnlockAfterManipulationBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             startLockTask()
@@ -74,8 +75,8 @@ class UnlockAfterManipulationActivity : AppCompatActivity(), ActivityViewModelHo
             }
         })
 
-        auth_btn.setOnClickListener { showAuthenticationScreen() }
-        use_backdoor.setOnClickListener { BackdoorDialogFragment().show(supportFragmentManager) }
+        binding.authBtn.setOnClickListener { showAuthenticationScreen() }
+        binding.useBackdoor.setOnClickListener { BackdoorDialogFragment().show(supportFragmentManager) }
     }
 
     override fun showAuthenticationScreen() {

@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,25 +23,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.timelimit.android.R
 import io.timelimit.android.data.model.ChildTask
+import io.timelimit.android.databinding.RecyclerFragmentBinding
 import io.timelimit.android.ui.manage.child.tasks.ConfirmTaskDialogFragment
-import kotlinx.android.synthetic.main.recycler_fragment.*
 
 class LockTaskFragment: Fragment() {
     private val model: LockModel by activityViewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.recycler_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
+        val binding = RecyclerFragmentBinding.inflate(inflater, container, false)
         val adapter = LockTaskAdapter()
 
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = adapter
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.recycler.adapter = adapter
 
         model.blockedCategoryTasks.observe(viewLifecycleOwner) { tasks ->
             adapter.content = listOf(LockTaskItem.Introduction) + tasks.map { LockTaskItem.Task(it) }
@@ -55,5 +49,7 @@ class LockTaskFragment: Fragment() {
                     ConfirmTaskDialogFragment.newInstance(taskId = task.taskId, taskTitle = task.taskTitle, fromManageScreen = false).show(parentFragmentManager)
             }
         }
+
+        return binding.root
     }
 }

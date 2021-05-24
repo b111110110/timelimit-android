@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import io.timelimit.android.R
+import io.timelimit.android.databinding.AnnoyActivityBinding
 import io.timelimit.android.livedata.map
 import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.ui.manage.device.manage.ManipulationWarningTypeLabel
 import io.timelimit.android.ui.manage.device.manage.ManipulationWarnings
 import io.timelimit.android.util.TimeTextUtil
-import kotlinx.android.synthetic.main.annoy_activity.*
 
 class AnnoyActivity : AppCompatActivity() {
     companion object {
@@ -53,7 +53,8 @@ class AnnoyActivity : AppCompatActivity() {
         val model = ViewModelProviders.of(this).get(AnnoyModel::class.java)
         val logic = DefaultAppLogic.with(this)
 
-        setContentView(R.layout.annoy_activity)
+        val binding = AnnoyActivityBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             if (logic.platformIntegration.setLockTaskPackages(listOf(packageName))) {
@@ -67,7 +68,7 @@ class AnnoyActivity : AppCompatActivity() {
                 shutdown()
             }
 
-            annoy_timer.setText(
+            binding.annoyTimer.setText(
                     getString(R.string.annoy_timer, TimeTextUtil.seconds(it.toInt(), this@AnnoyActivity))
             )
         })
@@ -86,10 +87,10 @@ class AnnoyActivity : AppCompatActivity() {
             }
         }.observe(this, Observer {
             if (it.isNullOrEmpty()) {
-                annoy_reason.visibility = View.GONE
+                binding.annoyReason.visibility = View.GONE
             } else {
-                annoy_reason.visibility = View.VISIBLE
-                annoy_reason.setText(it)
+                binding.annoyReason.visibility = View.VISIBLE
+                binding.annoyReason.setText(it)
             }
         })
     }

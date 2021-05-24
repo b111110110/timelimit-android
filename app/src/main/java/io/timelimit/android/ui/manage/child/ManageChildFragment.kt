@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,6 @@ import io.timelimit.android.livedata.map
 import io.timelimit.android.ui.fragment.ChildFragmentWrapper
 import io.timelimit.android.ui.main.FragmentWithCustomTitle
 import io.timelimit.android.ui.manage.child.category.ManageChildCategoriesFragment
-import kotlinx.android.synthetic.main.single_fragment_wrapper.*
 
 class ManageChildFragment : ChildFragmentWrapper(), FragmentWithCustomTitle {
     private val params: ManageChildFragmentArgs by lazy { ManageChildFragmentArgs.fromBundle(arguments!!) }
@@ -46,7 +45,7 @@ class ManageChildFragment : ChildFragmentWrapper(), FragmentWithCustomTitle {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState == null && params.fromRedirect) {
-            Snackbar.make(coordinator, R.string.manage_child_redirected_toast, Snackbar.LENGTH_LONG).show()
+            Snackbar.make(binding.coordinator, R.string.manage_child_redirected_toast, Snackbar.LENGTH_LONG).show()
         }
     }
 

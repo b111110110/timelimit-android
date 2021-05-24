@@ -31,6 +31,7 @@ import io.timelimit.android.async.Threads
 import io.timelimit.android.data.Database
 import io.timelimit.android.data.model.HintsToShow
 import io.timelimit.android.data.model.TimeLimitRule
+import io.timelimit.android.databinding.FragmentCategoryAppsAndRulesBinding
 import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.sync.actions.AddCategoryAppsAction
 import io.timelimit.android.sync.actions.CreateTimeLimitRuleAction
@@ -42,7 +43,6 @@ import io.timelimit.android.ui.manage.category.apps.add.AddCategoryAppsFragment
 import io.timelimit.android.ui.manage.category.timelimit_rules.edit.EditTimeLimitRuleDialogFragment
 import io.timelimit.android.ui.manage.category.timelimit_rules.edit.EditTimeLimitRuleDialogFragmentListener
 import io.timelimit.android.ui.manage.child.apps.assign.AssignAppCategoryDialogFragment
-import kotlinx.android.synthetic.main.fragment_category_apps_and_rules.*
 
 abstract class CategoryAppsAndRulesFragment: Fragment(), Handlers, EditTimeLimitRuleDialogFragmentListener {
     private val adapter = AppAndRuleAdapter().also { it.handlers = this }
@@ -53,16 +53,12 @@ abstract class CategoryAppsAndRulesFragment: Fragment(), Handlers, EditTimeLimit
     abstract val categoryId: String
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_category_apps_and_rules, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        val binding = FragmentCategoryAppsAndRulesBinding.inflate(inflater, container, false)
 
         model.init(userId = childId, categoryId = categoryId)
 
-        recycler.layoutManager = LinearLayoutManager(requireContext())
-        recycler.adapter = adapter
+        binding.recycler.layoutManager = LinearLayoutManager(requireContext())
+        binding.recycler.adapter = adapter
 
         model.dateAndUsedTimes.observe(viewLifecycleOwner) { (date, usedTimes) ->
             adapter.date = date
@@ -91,7 +87,9 @@ abstract class CategoryAppsAndRulesFragment: Fragment(), Handlers, EditTimeLimit
                     database.config().setHintsShownSync(HintsToShow.TIME_LIMIT_RULE_INTRODUCTION)
                 }
             }
-        }).attachToRecyclerView(recycler)
+        }).attachToRecyclerView(binding.recycler)
+
+        return binding.root
     }
 
     fun setListContent(items: List<AppAndRuleItem>) { adapter.items = items }
