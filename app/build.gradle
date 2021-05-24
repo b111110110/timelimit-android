@@ -26,8 +26,8 @@ android {
         applicationId "io.timelimit.android"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 157
-        versionName "4.9.2"
+        versionCode 160
+        versionName "5.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -179,7 +179,7 @@ dependencies {
 
     implementation "androidx.work:work-runtime:$work_version"
     implementation "androidx.work:work-runtime-ktx:$work_version"
-    androidTestImplementation "android.arch.work:work-testing:$work_version"
+    // androidTestImplementation "android.arch.work:work-testing:$work_version"
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.3'

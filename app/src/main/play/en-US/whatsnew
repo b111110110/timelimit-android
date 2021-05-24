@@ -1,2 +1,3 @@
-- updated text in the add device screen
-- updated dependencies
+- notify earlier if the premium version expires
+- fixed race condition during the sync
+- prepare Android 12 compatibility
