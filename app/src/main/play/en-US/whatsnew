@@ -1,3 +1,2 @@
-- notify earlier if the premium version expires
-- fixed race condition during the sync
-- prepare Android 12 compatibility
+- updated parent key help screen
+- updated dependencies
