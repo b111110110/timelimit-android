@@ -1158,7 +1158,9 @@
     <string name="parent_mode_key_id">Schlüssel-ID: %s</string>
     <string name="parent_mode_help_text">
         Sie haben den Eltern-Schlüssel-Modus gewählt.
-        Dies ermöglicht es, dieses Gerät als Schlüssel zu benutzen.
+        Dies ermöglicht es, dieses Gerät als Schlüssel zu benutzen,
+        indem es im Elternbenutzereintrag am anderen Gerät hinzugefügt wird.
+        Eine Fernsteuerung ist hiermit nicht möglich.
         Wenn das nicht das ist, was Sie wollen,
         dann installieren Sie TimeLimit erneut.
     </string>

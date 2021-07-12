@@ -1200,9 +1200,11 @@
     <string name="parent_mode_key_id">Key ID: %s</string>
     <string name="parent_mode_help_text">
         You have chosen the parent key mode.
-        This allows you to use your device as parent key.
-        In case this is not what you want,
-        reset/ reinstall TimeLimit.
+        This allows you to use your device as parent key by
+        adding it at the parent user entry at the other device.
+        This does not allow a remote control.
+        In case you want to restrict this device,
+        reset/reinstall TimeLimit.
     </string>
 
     <string name="password_validator_too_short">The password must have at least <xliff:g example="5" id="number of chars">%d</xliff:g> characters</string>
