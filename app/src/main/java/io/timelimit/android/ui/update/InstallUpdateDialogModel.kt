@@ -126,6 +126,7 @@ class InstallUpdateDialogModel(application: Application): AndroidViewModel(appli
                         if (intent.action != action) { return }
 
                         val reportedStatus = intent.getIntExtra(PackageInstaller.EXTRA_STATUS, PackageInstaller.STATUS_FAILURE)
+                        val detailMessage = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE) ?: "no message"
 
                         if (reportedStatus == PackageInstaller.STATUS_SUCCESS) {
                             application.unregisterReceiver(this)
@@ -142,11 +143,11 @@ class InstallUpdateDialogModel(application: Application): AndroidViewModel(appli
                                 PackageInstaller.STATUS_FAILURE_INCOMPATIBLE -> "incompatible"
                                 PackageInstaller.STATUS_FAILURE_INVALID -> "invalid"
                                 PackageInstaller.STATUS_FAILURE_STORAGE -> "storage"
-                                else -> "other error"
+                                else -> "other error $reportedStatus"
                             }
 
                             application.unregisterReceiver(this)
-                            statusInternal.postValue(Status.Failure(message))
+                            statusInternal.postValue(Status.Failure("$message: $detailMessage"))
                         }
                     }
                 }
