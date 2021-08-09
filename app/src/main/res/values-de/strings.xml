@@ -281,7 +281,7 @@
     <string name="category_notifications_filter_checkbox">Alle Benachrichtigungen blockieren</string>
     <string name="category_notifications_filter_dialog">
         Wenn Sie diese Option aktivieren, dann werden ALLE Benachrichtigungen von Apps dieser Kategorie blockiert,
-        auch wenn Apps dieser Kategorie erlaubt sind
+        auch wenn Apps dieser Kategorie erlaubt sind. Damit werden auch (Hintergrund)musikwiedergaben blockiert.
     </string>
 
     <string name="category_settings">erweiterte Einstellungen</string>

@@ -323,7 +323,8 @@
     <string name="category_notifications_filter_checkbox">Block all notifications</string>
     <string name="category_notifications_filter_dialog">
         Enabling this blocks ALL notifications from Apps of this category,
-        when the Apps itself are blocked AND when the Apps itself are not blocked
+        when the Apps itself are blocked AND when the Apps itself are not blocked.
+        This will block (background) music playback, too.
     </string>
 
     <string name="category_settings">Advanced Settings</string>
