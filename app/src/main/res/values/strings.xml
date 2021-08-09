@@ -1252,7 +1252,7 @@
 
     <string name="purchase_error_not_supported_by_device">The payment via Google Play is not supported by your device</string>
     <string name="purchase_error_not_supported_by_app_variant">This build does not support payments.
-        Get in touch with the support for purchases.
+        https://timelimit.io/en/#how-to-purchase provides more details.
     </string>
     <string name="purchase_error_existing_payment">
         You paid already.

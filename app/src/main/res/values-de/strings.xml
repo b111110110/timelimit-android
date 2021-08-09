@@ -1209,8 +1209,8 @@
     <string name="purchase_one_year">Vollversion für ein Jahr</string>
 
     <string name="purchase_error_not_supported_by_device">Die Bezahlung mittels Google Play wird von Ihrem Gerät nicht unterstützt</string>
-    <string name="purchase_error_not_supported_by_app_variant">Dieser Build hat keine Bezahlmöglichkeit.
-        Wenden Sie sich daher an den Support, um einen Kauf durchzuführen.
+    <string name="purchase_error_not_supported_by_app_variant">Dieser Build hat keine integrierte Bezahlmöglichkeit.
+        https://timelimit.io/de/#how-to-purchase liefert Ihnen weitere Informationen.
     </string>
     <string name="purchase_error_existing_payment">
         Sie haben bereits bezahlt. Sie können die Vollversion erst kurz vor dem Ablaufen (oder danach) verlängern

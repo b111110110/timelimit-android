@@ -1,5 +1,5 @@
 <!--
-  TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+  TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation version 3 of the License.
@@ -76,7 +76,7 @@
 
                         <TextView
                             android:text="@{priceData.monthPrice}"
-                            tools:text="0,99 €"
+                            tools:text="1,00 €"
                             android:textAppearance="?android:textAppearanceMedium"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
@@ -102,7 +102,7 @@
 
                         <TextView
                             android:text="@{priceData.yearPrice}"
-                            tools:text="9,99 €"
+                            tools:text="10,00 €"
                             android:textAppearance="?android:textAppearanceMedium"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content" />
@@ -135,6 +135,7 @@
                     android:textAppearance="?android:textAppearanceMedium"
                     android:gravity="center_horizontal"
                     android:text="@{errorReason}"
+                    android:autoLink="web"
                     tools:text="You have to update the App before you can do purchases"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
