@@ -130,8 +130,12 @@
     <string name="authenticate_by_mail_hint_mail">E-Mail-Adresse</string>
     <string name="authenticate_by_mail_hint_code">empfangener Code</string>
     <string name="authenticate_by_mail_hint_general">
-        Wenn Sie sich in der Vergangneheit mit Ihrem Google-Konto angemeldet haben,
-        dann verwenden Sie die E-Mail-Adresse, die mit diesem Google-Konto verknüpft ist.
+        Falls Sie sich im Jahr 2019 oder früher bei TimeLimit registriert haben und dabei die
+        Anmeldung mittels Google-Konto verwendet haben, dann geben Sie jetzt
+        stattdessen die entsprechende Google-Mail-Adresse an.
+        Achten Sie darauf, stets die gleiche E-Mail-Adresse in der gleichen
+        Schreibweise zu verwenden, damit die Zuordnung zu anderen Geräten und
+        bestehenden Käufen funktioniert.
     </string>
 
     <string name="authenticate_by_mail_snackbar_wrong_code">Der eingegebene Code ist falsch</string>

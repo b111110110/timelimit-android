@@ -174,7 +174,10 @@
     <string name="authenticate_by_mail_hint_mail">Mail address</string>
     <string name="authenticate_by_mail_hint_code">Received code</string>
     <string name="authenticate_by_mail_hint_general">
-        If you signed in earlier using your Google account, then just use the mail address which is assigned to your Google account.
+        If you signed up for TimeLimit 2019 or earlier using your Google account, then use
+        the associated Google mail address instead.
+        Always use the same mail address with the same spelling
+        so that linking to other devices and purchases works.
     </string>
 
     <string name="authenticate_by_mail_snackbar_wrong_code">The entered code is invalid</string>
