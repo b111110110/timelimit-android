@@ -32,6 +32,7 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
     private var countedTime = 0
     private var lastCategoryHandlings = emptyList<CategoryItselfHandling>()
     private var categoryIds = emptySet<String>()
+    private var recentlyStartedCategories = emptySet<String>()
     private var trustedTimestamp = 0L
     private var dayOfEpoch = 0
     private var maxTimeToAdd = Long.MAX_VALUE
@@ -40,7 +41,13 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
     fun getCountedCategoryIds() = categoryIds
 
     // returns true if it made a commit
-    suspend fun report(duration: Int, handlings: List<CategoryItselfHandling>, trustedTimestamp: Long, dayOfEpoch: Int): Boolean {
+    suspend fun report(
+        duration: Int,
+        handlings: List<CategoryItselfHandling>,
+        recentlyStartedCategories: Set<String>,
+        trustedTimestamp: Long,
+        dayOfEpoch: Int
+    ): Boolean {
         if (handlings.find { !it.shouldCountTime } != null || duration < 0) {
             throw IllegalArgumentException()
         }
@@ -94,6 +101,7 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
         }
 
         this.lastCategoryHandlings = handlings
+        this.recentlyStartedCategories = recentlyStartedCategories
         this.trustedTimestamp = trustedTimestamp
         this.dayOfEpoch = dayOfEpoch
 
@@ -111,40 +119,82 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
         val makeCommit = lastCategoryHandlings.isNotEmpty() && countedTime > 0
 
         if (makeCommit) {
-            try {
-                ApplyActionUtil.applyAppLogicAction(
-                        action = AddUsedTimeActionVersion2(
-                                dayOfEpoch = dayOfEpoch,
-                                items = lastCategoryHandlings.map { handling ->
-                                    AddUsedTimeActionItem(
-                                            categoryId = handling.createdWithCategoryRelatedData.category.id,
-                                            timeToAdd = countedTime,
-                                            extraTimeToSubtract = if (handling.shouldCountExtraTime) countedTime else 0,
-                                            additionalCountingSlots = handling.additionalTimeCountingSlots,
-                                            sessionDurationLimits = handling.sessionDurationSlotsToCount
-                                    )
-                                },
-                                trustedTimestamp = if (lastCategoryHandlings.find { it.sessionDurationSlotsToCount.isNotEmpty() } != null) trustedTimestamp else 0
-                        ),
-                        appLogic = appLogic,
-                        ignoreIfDeviceIsNotConfigured = true
+            val categoriesWithSessionDurationLimits = lastCategoryHandlings
+                .filter { it.sessionDurationSlotsToCount.isNotEmpty() }
+                .map { it.createdWithCategoryRelatedData.category.id }
+                .toSet()
+
+            val categoriesWithSessionDurationLimitsWhichWereRecentlyStarted = categoriesWithSessionDurationLimits.intersect(recentlyStartedCategories)
+
+            if (categoriesWithSessionDurationLimitsWhichWereRecentlyStarted.isEmpty()) {
+                commitSendAction(
+                    items = lastCategoryHandlings,
+                    sendTimestamp = categoriesWithSessionDurationLimits.isNotEmpty()
                 )
-            } catch (ex: CategoryNotFoundException) {
+            } else {
                 if (BuildConfig.DEBUG) {
-                    Log.d(LOG_TAG, "could not commit used times", ex)
+                    Log.d(LOG_TAG, "skip updating the session duration last usage timestamps")
                 }
 
-                // this is a very rare case if a category is deleted while it is used;
-                // in this case there could be some lost time
-                // changes for other categories, but it's no big problem
+                if (categoriesWithSessionDurationLimits == categoriesWithSessionDurationLimitsWhichWereRecentlyStarted) {
+                    // no category needs the timestamp
+                    commitSendAction(
+                        items = lastCategoryHandlings,
+                        sendTimestamp = false
+                    )
+                } else {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(LOG_TAG, "... but only for some categories")
+                    }
+
+                    // some categories need the timestamp and others do not
+                    val items1 = lastCategoryHandlings.filter {
+                        categoriesWithSessionDurationLimitsWhichWereRecentlyStarted.contains(it.createdWithCategoryRelatedData.category.id)
+                    }
+                    val items2 = lastCategoryHandlings.filterNot {
+                        categoriesWithSessionDurationLimitsWhichWereRecentlyStarted.contains(it.createdWithCategoryRelatedData.category.id)
+                    }
+
+                    commitSendAction(items = items1, sendTimestamp = false)
+                    commitSendAction(items = items2, sendTimestamp = true)
+                }
             }
         }
 
         countedTime = 0
-        // doing this would cause a commit very soon again
-        // lastCategoryHandlings = emptyList()
-        // categoryIds = emptySet()
 
         return makeCommit
+    }
+
+    private suspend fun commitSendAction(items: List<CategoryItselfHandling>, sendTimestamp: Boolean) {
+        try {
+            ApplyActionUtil.applyAppLogicAction(
+                action = AddUsedTimeActionVersion2(
+                    dayOfEpoch = dayOfEpoch,
+                    items = items.map { handling -> prepareHandling(handling) },
+                    trustedTimestamp = if (sendTimestamp) trustedTimestamp else 0
+                ),
+                appLogic = appLogic,
+                ignoreIfDeviceIsNotConfigured = true
+            )
+        } catch (ex: CategoryNotFoundException) {
+            if (BuildConfig.DEBUG) {
+                Log.d(LOG_TAG, "could not commit used times", ex)
+            }
+
+            // this is a very rare case if a category is deleted while it is used;
+            // in this case there could be some lost time
+            // changes for other categories, but it's no big problem
+        }
+    }
+
+    private fun prepareHandling(handling: CategoryItselfHandling): AddUsedTimeActionItem {
+        return AddUsedTimeActionItem(
+            categoryId = handling.createdWithCategoryRelatedData.category.id,
+            timeToAdd = countedTime,
+            extraTimeToSubtract = if (handling.shouldCountExtraTime) countedTime else 0,
+            additionalCountingSlots = handling.additionalTimeCountingSlots,
+            sessionDurationLimits = handling.sessionDurationSlotsToCount
+        )
     }
 }
