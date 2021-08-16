@@ -339,8 +339,6 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                 }; reportStatusToCategoryHandlingCache(userRelatedData)
 
                 // check if should be blocked
-                val allCategoriesWithRemainingTimeBeforeAddingUsedTime = currentCategoryIds.filter { categoryHandlingCache.get(it).hasRemainingTime }
-
                 val blockedForegroundApp = foregroundAppWithBaseHandlings.find { (_, foregroundAppBaseHandling) ->
                     foregroundAppBaseHandling is AppBaseHandling.BlockDueToNoCategory ||
                             (foregroundAppBaseHandling is AppBaseHandling.UseCategories && foregroundAppBaseHandling.categoryIds.find {
