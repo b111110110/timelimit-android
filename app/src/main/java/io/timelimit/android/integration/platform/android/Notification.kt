@@ -161,10 +161,9 @@ object PendingIntentIds {
         PendingIntent.FLAG_UPDATE_CURRENT
     }
 
-    // TODO: uncomment this when using the next SDK version
-    val PENDING_INTENT_FLAGS_ALLOW_MUTATION = /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    val PENDING_INTENT_FLAGS_ALLOW_MUTATION = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-    } else {*/
+    } else {
         PendingIntent.FLAG_UPDATE_CURRENT
-    //}
+    }
 }

@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
 
+@androidx.work.ExperimentalExpeditedWork
 class SyncInBackgroundWorker(val context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
     companion object {
         private const val LOG_TAG = "SyncInBackground"
@@ -36,17 +37,18 @@ class SyncInBackgroundWorker(val context: Context, workerParameters: WorkerParam
             }
 
             WorkManager.getInstance().beginUniqueWork(
-                    UNIQUE_WORK_NAME,
-                    ExistingWorkPolicy.KEEP,
-                    OneTimeWorkRequest.Builder(SyncInBackgroundWorker::class.java)
-                            .setInitialDelay(10, TimeUnit.SECONDS)
-                            .setConstraints(
-                                    Constraints.Builder()
-                                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                                            .setRequiresBatteryNotLow(true)
-                                            .build()
-                            )
+                UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequest.Builder(SyncInBackgroundWorker::class.java)
+                    .setInitialDelay(10, TimeUnit.SECONDS)
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .setRequiresBatteryNotLow(true)
                             .build()
+                    )
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
             ).enqueue()
         }
 

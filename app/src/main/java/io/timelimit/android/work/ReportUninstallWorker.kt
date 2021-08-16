@@ -21,6 +21,7 @@ import androidx.work.*
 import io.timelimit.android.BuildConfig
 import io.timelimit.android.logic.DefaultAppLogic
 
+@androidx.work.ExperimentalExpeditedWork
 class ReportUninstallWorker(val context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
     companion object {
         private const val DATA_AUTH_TOKEN = "deviceAuthToken"
@@ -37,19 +38,20 @@ class ReportUninstallWorker(val context: Context, workerParameters: WorkerParame
             }
 
             WorkManager.getInstance().enqueue(
-                    OneTimeWorkRequest.Builder(ReportUninstallWorker::class.java)
-                            .setConstraints(
-                                    Constraints.Builder()
-                                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                                            .build()
-                            )
-                            .setInputData(
-                                    Data.Builder()
-                                            .putString(DATA_AUTH_TOKEN, deviceAuthToken)
-                                            .putString(DATA_CUSTOM_SERVER_URL, customServerUrl)
-                                            .build()
-                            )
+                OneTimeWorkRequest.Builder(ReportUninstallWorker::class.java)
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
                             .build()
+                    )
+                    .setInputData(
+                        Data.Builder()
+                            .putString(DATA_AUTH_TOKEN, deviceAuthToken)
+                            .putString(DATA_CUSTOM_SERVER_URL, customServerUrl)
+                            .build()
+                    )
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
             )
         }
     }
