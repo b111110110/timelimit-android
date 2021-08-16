@@ -44,7 +44,6 @@ class SyncInBackgroundWorker(val context: Context, workerParameters: WorkerParam
                     .setConstraints(
                         Constraints.Builder()
                             .setRequiredNetworkType(NetworkType.CONNECTED)
-                            .setRequiresBatteryNotLow(true)
                             .build()
                     )
                     .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
