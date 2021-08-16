@@ -155,13 +155,15 @@ class ManageParentFragment : Fragment(), FragmentWithCustomTitle {
             }
 
             override fun onLinkMailClicked() {
-                navigation.safeNavigate(
+                if (activity.getActivityViewModel().requestAuthenticationOrReturnTrue()) {
+                    navigation.safeNavigate(
                         ManageParentFragmentDirections.
-                                actionManageParentFragmentToLinkParentMailFragment(
-                                        params.parentId
-                                ),
+                        actionManageParentFragmentToLinkParentMailFragment(
+                            params.parentId
+                        ),
                         R.id.manageParentFragment
-                )
+                    )
+                }
             }
         }
 
