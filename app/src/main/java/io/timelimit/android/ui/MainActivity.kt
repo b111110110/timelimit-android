@@ -33,7 +33,6 @@ import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import io.timelimit.android.Application
 import io.timelimit.android.R
-import io.timelimit.android.coroutines.runAsync
 import io.timelimit.android.data.IdGenerator
 import io.timelimit.android.extensions.showSafe
 import io.timelimit.android.integration.platform.android.NotificationChannels
