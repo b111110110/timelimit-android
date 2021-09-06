@@ -15,6 +15,8 @@
  */
 package io.timelimit.android.ui
 
+import android.app.NotificationManager
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
@@ -34,6 +36,7 @@ import io.timelimit.android.R
 import io.timelimit.android.coroutines.runAsync
 import io.timelimit.android.data.IdGenerator
 import io.timelimit.android.extensions.showSafe
+import io.timelimit.android.integration.platform.android.NotificationChannels
 import io.timelimit.android.livedata.ignoreUnchanged
 import io.timelimit.android.livedata.liveDataFromNullableValue
 import io.timelimit.android.livedata.map
@@ -72,6 +75,8 @@ class MainActivity : AppCompatActivity(), ActivityViewModelHolder {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        NotificationChannels.createNotificationChannels(getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager, this)
 
         if (savedInstanceState == null) {
             NavHostFragment.create(R.navigation.nav_graph).let { navhost ->

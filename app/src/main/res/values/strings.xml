@@ -1132,6 +1132,9 @@
     <string name="notification_channel_premium_expires_title">Premium version expires</string>
     <string name="notification_channel_premium_expires_text">Notification if the premium version expires shortly</string>
 
+    <string name="notification_channel_background_sync_title">Background sync</string>
+    <string name="notification_channel_background_sync_text">Sometimes shows technically required notifications when TimeLimit syncs in the background</string>
+
     <string name="notification_filter_not_blocked_title">TimeLimit has blocked a notification</string>
     <string name="notification_filter_blocking_failed_title">TimeLimit could not block a notification</string>
 
@@ -1141,6 +1144,9 @@
     <string name="notification_generic_text">Tap to open TimeLimit</string>
     <string name="notification_premium_expires_title">The premium version will expire soon</string>
     <string name="notification_premium_expires_text">It will not renew automatically</string>
+
+    <string name="notification_background_sync_title">TimeLimit is running</string>
+    <string name="notification_background_sync_text">a background synchronisation is in progress</string>
 
     <string name="obsolete_message">You are using TimeLimit at a obsolete Android version.
         Although this can work, it is not recommend.

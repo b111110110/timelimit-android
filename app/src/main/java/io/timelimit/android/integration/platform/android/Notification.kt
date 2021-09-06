@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ object NotificationIds {
     const val USER_NOTIFICATION = 5
     const val TIME_WARNING = 6
     const val LOCAL_UPDATE_NOTIFICATION = 7
+    const val WORKER_REPORT_UNINSTALL = 8
+    const val WORKER_SYNC_BACKGROUND = 9
 }
 
 object NotificationChannels {
@@ -40,6 +42,7 @@ object NotificationChannels {
     const val UPDATE_NOTIFICATION = "update notification"
     const val TIME_WARNING = "time warning"
     const val PREMIUM_EXPIRES_NOTIFICATION = "premium expires"
+    const val BACKGROUND_SYNC_NOTIFICATION = "background sync"
 
     private fun createAppStatusChannel(notificationManager: NotificationManager, context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -119,7 +122,7 @@ object NotificationChannels {
         }
     }
 
-    fun createPremiumExpiresChannel(notificationManager: NotificationManager, context: Context) {
+    private fun createPremiumExpiresChannel(notificationManager: NotificationManager, context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             notificationManager.createNotificationChannel(
                     NotificationChannel(
@@ -136,6 +139,25 @@ object NotificationChannels {
         }
     }
 
+    private fun createBackgroundSyncChannel(notificationManager: NotificationManager, context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notificationManager.createNotificationChannel(
+                    NotificationChannel(
+                            BACKGROUND_SYNC_NOTIFICATION,
+                            context.getString(R.string.notification_channel_background_sync_title),
+                            NotificationManager.IMPORTANCE_LOW
+                    ).apply {
+                        description = context.getString(R.string.notification_channel_background_sync_text)
+                        enableLights(false)
+                        setSound(null, null)
+                        enableVibration(false)
+                        setShowBadge(false)
+                        lockscreenVisibility = NotificationCompat.VISIBILITY_SECRET
+                    }
+            )
+        }
+    }
+
     fun createNotificationChannels(notificationManager: NotificationManager, context: Context) {
         createAppStatusChannel(notificationManager, context)
         createBlockedNotificationChannel(notificationManager, context)
@@ -143,6 +165,7 @@ object NotificationChannels {
         createUpdateNotificationChannel(notificationManager, context)
         createTimeWarningsNotificationChannel(notificationManager, context)
         createPremiumExpiresChannel(notificationManager, context)
+        createBackgroundSyncChannel(notificationManager, context)
     }
 }
 

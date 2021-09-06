@@ -1087,6 +1087,9 @@
     <string name="notification_channel_premium_expires_title">Vollversionablauf</string>
     <string name="notification_channel_premium_expires_text">Benachrichtigungen, wenn die Vollversion bald abläuft</string>
 
+    <string name="notification_channel_background_sync_title">Hintergrundsychronisation</string>
+    <string name="notification_channel_background_sync_text">Zeigt manchmal technisch notwendige Benachrichtigungen an, wenn TimeLimit im Hintergrund synchronisiert</string>
+
     <string name="notification_filter_not_blocked_title">TimeLimit hat eine Benachrichtigung blockiert</string>
     <string name="notification_filter_blocking_failed_title">TimeLimit konnte eine Benachrichtigung nicht blockieren</string>
 
@@ -1096,6 +1099,9 @@
     <string name="notification_generic_text">Tippen, um TimeLimit zu öffnen</string>
     <string name="notification_premium_expires_title">Die Vollversion wird bald ablaufen</string>
     <string name="notification_premium_expires_text">Es erfolgt keine automatische Verlängerung</string>
+
+    <string name="notification_background_sync_title">TimeLimit ist aktiv</string>
+    <string name="notification_background_sync_text">eine Synchronisation läuft</string>
 
     <string name="obsolete_message">Sie verwenden TimeLimit auf einer älteren Android-Version.
         Das kann funktionieren, aber es wird nicht empfohlen.
