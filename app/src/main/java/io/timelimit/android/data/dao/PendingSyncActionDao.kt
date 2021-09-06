@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,9 @@ interface PendingSyncActionDao {
 
     @Query("SELECT COUNT(*) FROM pending_sync_action")
     fun countAllActionsLive(): LiveData<Long>
+
+    @Query("SELECT COUNT(*) FROM pending_sync_action")
+    fun countAllActions(): Long
 
     @Query("SELECT * FROM pending_sync_action WHERE scheduled_for_upload = 0 ORDER BY sequence_number DESC")
     fun getLatestUnscheduledActionSync(): PendingSyncAction?

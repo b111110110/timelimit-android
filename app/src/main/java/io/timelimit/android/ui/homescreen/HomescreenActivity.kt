@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import io.timelimit.android.R
+import io.timelimit.android.databinding.ActivityHomescreenBinding
 import io.timelimit.android.databinding.ActivityHomescreenItemBinding
-import kotlinx.android.synthetic.main.activity_homescreen.*
 
 class HomescreenActivity: AppCompatActivity() {
     companion object {
@@ -35,11 +35,13 @@ class HomescreenActivity: AppCompatActivity() {
     }
 
     private val model: HomescreenModel by lazy { ViewModelProvider(this).get(HomescreenModel::class.java) }
+    private lateinit var binding: ActivityHomescreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setContentView(R.layout.activity_homescreen)
+        binding = ActivityHomescreenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         model.handleLaunchIfNotYetExecuted(intent.getBooleanExtra(FORCE_SELECTION, false))
 
@@ -80,14 +82,14 @@ class HomescreenActivity: AppCompatActivity() {
     }
 
     private fun initOptionList() {
-        maincard.visibility = View.VISIBLE
+        binding.maincard.visibility = View.VISIBLE
 
         val options = HomescreenUtil.launcherOptions(this)
 
-        launcher_options.removeAllViews()
+        binding.launcherOptions.removeAllViews()
 
         options.forEach { option ->
-            val view = ActivityHomescreenItemBinding.inflate(LayoutInflater.from(this), launcher_options, true)
+            val view = ActivityHomescreenItemBinding.inflate(LayoutInflater.from(this), binding.launcherOptions, true)
 
             view.label = try {
                 packageManager.getApplicationLabel(
@@ -119,18 +121,18 @@ class HomescreenActivity: AppCompatActivity() {
     }
 
     private fun hideOptionList() {
-        maincard.visibility = View.GONE
+        binding.maincard.visibility = View.GONE
 
-        launcher_options.removeAllViews()
+        binding.launcherOptions.removeAllViews()
     }
 
     private fun showProgress(progresss: Int) {
-        progress_card.visibility = View.VISIBLE
-        progress_bar.progress = progresss
+        binding.progressCard.visibility = View.VISIBLE
+        binding.progressBar.progress = progresss
     }
 
     private fun hideProgress() {
-        progress_card.visibility = View.GONE
+        binding.progressCard.visibility = View.GONE
     }
 
     override fun onResume() {

@@ -86,7 +86,7 @@ object UpdateUtil {
                 context,
                 PendingIntentIds.OPEN_UPDATER,
                 Intent(context, UpdateActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntentIds.PENDING_INTENT_FLAGS
         )
 
         notificationManager.notify(

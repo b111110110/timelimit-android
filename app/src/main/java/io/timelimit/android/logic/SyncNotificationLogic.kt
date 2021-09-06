@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -107,7 +107,7 @@ class SyncNotificationLogic (private val appLogic: AppLogic) {
             val oldEntry = notificationsToRemove.find { it.type == warning.first && it.id == warning.second }
 
             if (warning.first == NotificationTypes.PREMIUM_EXPIRES) {
-                val notifyTime = fullVersionEndTime!! - 1000 * 60 * 60 * 24 * 3   // wait until 3 days before its end time
+                val notifyTime = fullVersionEndTime!! - 1000 * 60 * 60 * 24 * 5   // wait until 5 days before its end time
 
                 if (oldEntry != null) {
                     notificationsToRemove.remove(oldEntry)

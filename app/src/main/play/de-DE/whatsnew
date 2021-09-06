@@ -1,4 +1,3 @@
-- Änderungen
-  - Zeitwarnungen werden auch für Sperrzeiten und Sitzungsdauerbegrenzungen angezeigt
-- Fehlerbehebungen
-  - Sortierung der App-Liste nach dem Namen hat nicht funktioniert
+- Probleme im Zusammenhang mit der Hintergrundsynchronisation behoben
+- kleine Änderungen an den Texten
+- Abhängigkeiten aktualisiert

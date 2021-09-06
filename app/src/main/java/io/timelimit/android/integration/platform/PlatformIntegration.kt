@@ -21,7 +21,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.TypeConverter
 import io.timelimit.android.data.model.App
 import io.timelimit.android.data.model.AppActivity
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 abstract class PlatformIntegration(
         val maximumProtectionLevel: ProtectionLevel

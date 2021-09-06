@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import io.timelimit.android.data.customtypes.ImmutableBitmask
 import io.timelimit.android.data.model.Category
 import io.timelimit.android.data.model.HintsToShow
 import io.timelimit.android.data.model.withConfigCopiedToOtherDates
+import io.timelimit.android.databinding.FragmentBlockedTimeAreasBinding
 import io.timelimit.android.livedata.map
 import io.timelimit.android.livedata.waitForNonNullValue
 import io.timelimit.android.logic.DefaultAppLogic
@@ -38,7 +39,6 @@ import io.timelimit.android.sync.actions.UpdateCategoryBlockedTimesAction
 import io.timelimit.android.ui.main.ActivityViewModel
 import io.timelimit.android.ui.main.getActivityViewModel
 import io.timelimit.android.ui.mustread.MustReadFragment
-import kotlinx.android.synthetic.main.fragment_blocked_time_areas.*
 
 class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentListener {
     companion object {
@@ -59,6 +59,7 @@ class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentL
     private val items = MutableLiveData<BlockedTimeItems>()
     private val childId: String get() = requireArguments().getString(CHILD_ID)!!
     private val categoryId: String get() = requireArguments().getString(CATEGORY_ID)!!
+    private lateinit var binding: FragmentBlockedTimeAreasBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,10 +83,6 @@ class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentL
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_blocked_time_areas, container, false)
-    }
-
     fun updateBlockedTimes(oldMask: ImmutableBitmask, newMask: ImmutableBitmask) {
         if (
                 auth.tryDispatchParentAction(
@@ -96,7 +93,7 @@ class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentL
                         allowAsChild = true
                 )
         ) {
-            Snackbar.make(coordinator.parent as View, R.string.blocked_time_areas_snackbar_modified, Snackbar.LENGTH_SHORT)
+            Snackbar.make(binding.coordinator.parent as View, R.string.blocked_time_areas_snackbar_modified, Snackbar.LENGTH_SHORT)
                     .also {
                         if (auth.isParentAuthenticated()) {
                             it.setAction(R.string.generic_undo) {
@@ -119,29 +116,29 @@ class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentL
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentBlockedTimeAreasBinding.inflate(inflater, container, false)
 
-        btn_help.setOnClickListener {
+        binding.btnHelp.setOnClickListener {
             BlockedTimeAreasHelpDialog().show(parentFragmentManager)
         }
 
-        btn_copy_to_other_days.setOnClickListener {
+        binding.btnCopyToOtherDays.setOnClickListener {
             if (auth.requestAuthenticationOrReturnTrue()) {
                 CopyBlockedTimeAreasDialogFragment.newInstance(this@BlockedTimeAreasFragment).show(parentFragmentManager)
             }
         }
 
         BlockedTimeAreasLogic.init(
-                recycler = recycler,
-                daySpinner = spinner_day,
-                detailedModeCheckbox = detailed_mode,
+                recycler = binding.recycler,
+                daySpinner = binding.spinnerDay,
+                detailedModeCheckbox = binding.detailedMode,
                 checkAuthentication = {
                     if (auth.isParentAuthenticated()) {
                         BlockedTimeAreasLogic.Authentication.FullyAvailable
                     } else if (auth.isParentOrChildAuthenticated(childId = childId)) {
                         BlockedTimeAreasLogic.Authentication.OnlyAllowAddingLimits(
-                                showHintHook = { Snackbar.make(coordinator.parent as View, R.string.blocked_time_areas_snackbar_child_hint, Snackbar.LENGTH_LONG).show() },
+                                showHintHook = { Snackbar.make(binding.coordinator.parent as View, R.string.blocked_time_areas_snackbar_child_hint, Snackbar.LENGTH_LONG).show() },
                                 showErrorHook = { auth.requestAuthentication() }
                         )
                     } else {
@@ -154,5 +151,7 @@ class BlockedTimeAreasFragment : Fragment(), CopyBlockedTimeAreasDialogFragmentL
                 currentData = category.map { it?.blockedMinutesInWeek },
                 lifecycleOwner = this
         )
+
+        return binding.root
     }
 }

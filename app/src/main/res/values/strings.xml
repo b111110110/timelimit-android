@@ -120,6 +120,9 @@
     <string name="add_device">Add device</string>
     <string name="add_device_info">
         Enter the code at the device which you would like to add.
+        You can enter the code ONLY during the setup of TimeLimit and only if you chose to link
+        the device using a code. You can not enter this code later - you must reinstall TimeLimit at
+        the other device in this case.
     </string>
     <string name="add_device_success">The device %s was added</string>
 
@@ -171,7 +174,10 @@
     <string name="authenticate_by_mail_hint_mail">Mail address</string>
     <string name="authenticate_by_mail_hint_code">Received code</string>
     <string name="authenticate_by_mail_hint_general">
-        If you signed in earlier using your Google account, then just use the mail address which is assigned to your Google account.
+        If you signed up for TimeLimit 2019 or earlier using your Google account, then use
+        the associated Google mail address instead.
+        Always use the same mail address with the same spelling
+        so that linking to other devices and purchases works.
     </string>
 
     <string name="authenticate_by_mail_snackbar_wrong_code">The entered code is invalid</string>
@@ -317,7 +323,8 @@
     <string name="category_notifications_filter_checkbox">Block all notifications</string>
     <string name="category_notifications_filter_dialog">
         Enabling this blocks ALL notifications from Apps of this category,
-        when the Apps itself are blocked AND when the Apps itself are not blocked
+        when the Apps itself are blocked AND when the Apps itself are not blocked.
+        This will block (background) music playback, too.
     </string>
 
     <string name="category_settings">Advanced Settings</string>
@@ -1108,7 +1115,7 @@
     </string>
 
     <string name="notification_channel_app_status_title">Apps status</string>
-    <string name="notification_channel_app_status_description">Shows amongst other things the reamining time for the currently used App</string>
+    <string name="notification_channel_app_status_description">Shows amongst other things the remaining time for the currently used App</string>
 
     <string name="notification_channel_blocked_notification_title">blocked notifications</string>
     <string name="notification_channel_blocked_notification_text">Shows when a notification was blocked by TimeLimit</string>
@@ -1125,6 +1132,9 @@
     <string name="notification_channel_premium_expires_title">Premium version expires</string>
     <string name="notification_channel_premium_expires_text">Notification if the premium version expires shortly</string>
 
+    <string name="notification_channel_background_sync_title">Background sync</string>
+    <string name="notification_channel_background_sync_text">Sometimes shows technically required notifications when TimeLimit syncs in the background</string>
+
     <string name="notification_filter_not_blocked_title">TimeLimit has blocked a notification</string>
     <string name="notification_filter_blocking_failed_title">TimeLimit could not block a notification</string>
 
@@ -1134,6 +1144,9 @@
     <string name="notification_generic_text">Tap to open TimeLimit</string>
     <string name="notification_premium_expires_title">The premium version will expire soon</string>
     <string name="notification_premium_expires_text">It will not renew automatically</string>
+
+    <string name="notification_background_sync_title">TimeLimit is running</string>
+    <string name="notification_background_sync_text">a background synchronisation is in progress</string>
 
     <string name="obsolete_message">You are using TimeLimit at a obsolete Android version.
         Although this can work, it is not recommend.
@@ -1197,9 +1210,11 @@
     <string name="parent_mode_key_id">Key ID: %s</string>
     <string name="parent_mode_help_text">
         You have chosen the parent key mode.
-        This allows you to use your device as parent key.
-        In case this is not what you want,
-        reset/ reinstall TimeLimit.
+        This allows you to use your device as parent key by
+        adding it at the parent user entry at the other device.
+        This does not allow a remote control.
+        In case you want to restrict this device,
+        reset/reinstall TimeLimit.
     </string>
 
     <string name="password_validator_too_short">The password must have at least <xliff:g example="5" id="number of chars">%d</xliff:g> characters</string>
@@ -1247,7 +1262,7 @@
 
     <string name="purchase_error_not_supported_by_device">The payment via Google Play is not supported by your device</string>
     <string name="purchase_error_not_supported_by_app_variant">This build does not support payments.
-        Get in touch with the support for purchases.
+        https://timelimit.io/en/#how-to-purchase provides more details.
     </string>
     <string name="purchase_error_existing_payment">
         You paid already.

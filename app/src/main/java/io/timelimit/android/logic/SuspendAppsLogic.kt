@@ -139,7 +139,7 @@ class SuspendAppsLogic(private val appLogic: AppLogic): Observer {
             }
         } while (didModify)
 
-        categoryHandlings.minBy { it.dependsOnMaxTime }?.let {
+        categoryHandlings.minByOrNull { it.dependsOnMaxTime }?.let {
             scheduleUpdate((it.dependsOnMaxTime - realTime.timeInMillis))
         }
 

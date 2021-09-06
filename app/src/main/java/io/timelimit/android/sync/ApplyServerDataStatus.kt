@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,15 @@ object ApplyServerDataStatus {
 
     fun applyServerDataStatusSync(status: ServerDataStatus, database: Database, platformIntegration: PlatformIntegration) {
         database.runInTransaction {
+            // this would override some local data which was not sent yet
+            // so it's better to cancel in this case (or, more complicated,
+            // apply the delta which was not sent locally)
+            //
+            // locking the database during a sync is no option as the network
+            // connection could be really bad
+            if (database.pendingSyncAction().countAllActions() > 0)
+                throw PendingSyncActionException()
+
             run {
                 // apply ful version until and message
 
@@ -539,4 +548,6 @@ object ApplyServerDataStatus {
             }
         }
     }
+
+    class PendingSyncActionException: RuntimeException()
 }

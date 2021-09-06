@@ -1,4 +1,3 @@
-- changes
-  - time warnings are shown for blocked time areas and session duration limitations now
-- bug fixes
-  - app list sorting by name did not work
+- fixed issues related to the background sync
+- small text changes
+- updated dependencies

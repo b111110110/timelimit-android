@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ import io.timelimit.android.extensions.safeNavigate
 import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.ui.setup.parentmode.SetupParentmodeDialogFragment
 import io.timelimit.android.ui.setup.privacy.PrivacyInfoDialogFragment
-import kotlinx.android.synthetic.main.fragment_setup_select_mode.*
 
 class SetupSelectModeFragment : Fragment() {
     companion object {
@@ -44,9 +43,10 @@ class SetupSelectModeFragment : Fragment() {
     }
 
     private lateinit var navigation: NavController
+    private lateinit var binding: FragmentSetupSelectModeBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val binding = FragmentSetupSelectModeBinding.inflate(inflater, container, false)
+        binding = FragmentSetupSelectModeBinding.inflate(inflater, container, false)
 
         return binding.root
     }
@@ -56,43 +56,43 @@ class SetupSelectModeFragment : Fragment() {
 
         navigation = Navigation.findNavController(view)
 
-        btn_local_mode.setOnClickListener {
+        binding.btnLocalMode.setOnClickListener {
             navigation.safeNavigate(
                     SetupSelectModeFragmentDirections.actionSetupSelectModeFragmentToSetupDevicePermissionsFragment(),
                     R.id.setupSelectModeFragment
             )
         }
 
-        btn_parent_mode.setOnClickListener {
+        binding.btnParentMode.setOnClickListener {
             PrivacyInfoDialogFragment().apply {
                 setTargetFragment(this@SetupSelectModeFragment, REQ_SETUP_CONNECTED_PARENT)
-            }.show(fragmentManager!!)
+            }.show(parentFragmentManager)
         }
 
-        btn_network_child_mode.setOnClickListener {
+        binding.btnNetworkChildMode.setOnClickListener {
             PrivacyInfoDialogFragment().apply {
                 setTargetFragment(this@SetupSelectModeFragment, REQ_SETUP_CONNECTED_CHILD)
-            }.show(fragmentManager!!)
+            }.show(parentFragmentManager)
         }
 
-        btn_parent_key_mode.setOnClickListener {
+        binding.btnParentKeyMode.setOnClickListener {
             SetupParentmodeDialogFragment().apply {
                 setTargetFragment(this@SetupSelectModeFragment, REQUEST_SETUP_PARENT_MODE)
             }.show(parentFragmentManager)
         }
 
-        btn_uninstall.setOnClickListener {
-            DefaultAppLogic.with(context!!).platformIntegration.disableDeviceAdmin()
+        binding.btnUninstall.setOnClickListener {
+            DefaultAppLogic.with(requireContext()).platformIntegration.disableDeviceAdmin()
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 startActivity(
-                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context!!.packageName}"))
+                        Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${requireContext().packageName}"))
                                 .addCategory(Intent.CATEGORY_DEFAULT)
                                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
             } else {
                 startActivity(
-                        Intent(Intent.ACTION_UNINSTALL_PACKAGE, Uri.parse("package:${context!!.packageName}"))
+                        Intent(Intent.ACTION_UNINSTALL_PACKAGE, Uri.parse("package:${requireContext().packageName}"))
                 )
             }
         }

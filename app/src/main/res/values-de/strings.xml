@@ -75,6 +75,10 @@
     <string name="add_device">Gerät hinzufügen</string>
     <string name="add_device_info">
         Geben Sie diesen Code an dem Gerät ein, das Sie hinzufügen möchten.
+        Sie können den Code NUR bei der Einrichtung von TimeLimit angeben und müssen dafür
+        auswählen, dass Sie eine Verknüpfung mit einer bestehenden Installation mit einem Code
+        durchführen möchten. Eine spätere Verknüpfung ist nicht möglich - dann muss TimeLimit am
+        anderen Gerät neu installiert werden.
     </string>
     <string name="add_device_success">Das Gerät %s wurde hinzugefügt</string>
 
@@ -126,8 +130,12 @@
     <string name="authenticate_by_mail_hint_mail">E-Mail-Adresse</string>
     <string name="authenticate_by_mail_hint_code">empfangener Code</string>
     <string name="authenticate_by_mail_hint_general">
-        Wenn Sie sich in der Vergangneheit mit Ihrem Google-Konto angemeldet haben,
-        dann verwenden Sie die E-Mail-Adresse, die mit diesem Google-Konto verknüpft ist.
+        Falls Sie sich im Jahr 2019 oder früher bei TimeLimit registriert haben und dabei die
+        Anmeldung mittels Google-Konto verwendet haben, dann geben Sie jetzt
+        stattdessen die entsprechende Google-Mail-Adresse an.
+        Achten Sie darauf, stets die gleiche E-Mail-Adresse in der gleichen
+        Schreibweise zu verwenden, damit die Zuordnung zu anderen Geräten und
+        bestehenden Käufen funktioniert.
     </string>
 
     <string name="authenticate_by_mail_snackbar_wrong_code">Der eingegebene Code ist falsch</string>
@@ -273,7 +281,7 @@
     <string name="category_notifications_filter_checkbox">Alle Benachrichtigungen blockieren</string>
     <string name="category_notifications_filter_dialog">
         Wenn Sie diese Option aktivieren, dann werden ALLE Benachrichtigungen von Apps dieser Kategorie blockiert,
-        auch wenn Apps dieser Kategorie erlaubt sind
+        auch wenn Apps dieser Kategorie erlaubt sind. Damit werden auch (Hintergrund)musikwiedergaben blockiert.
     </string>
 
     <string name="category_settings">erweiterte Einstellungen</string>
@@ -1079,6 +1087,9 @@
     <string name="notification_channel_premium_expires_title">Vollversionablauf</string>
     <string name="notification_channel_premium_expires_text">Benachrichtigungen, wenn die Vollversion bald abläuft</string>
 
+    <string name="notification_channel_background_sync_title">Hintergrundsychronisation</string>
+    <string name="notification_channel_background_sync_text">Zeigt manchmal technisch notwendige Benachrichtigungen an, wenn TimeLimit im Hintergrund synchronisiert</string>
+
     <string name="notification_filter_not_blocked_title">TimeLimit hat eine Benachrichtigung blockiert</string>
     <string name="notification_filter_blocking_failed_title">TimeLimit konnte eine Benachrichtigung nicht blockieren</string>
 
@@ -1088,6 +1099,9 @@
     <string name="notification_generic_text">Tippen, um TimeLimit zu öffnen</string>
     <string name="notification_premium_expires_title">Die Vollversion wird bald ablaufen</string>
     <string name="notification_premium_expires_text">Es erfolgt keine automatische Verlängerung</string>
+
+    <string name="notification_background_sync_title">TimeLimit ist aktiv</string>
+    <string name="notification_background_sync_text">eine Synchronisation läuft</string>
 
     <string name="obsolete_message">Sie verwenden TimeLimit auf einer älteren Android-Version.
         Das kann funktionieren, aber es wird nicht empfohlen.
@@ -1154,7 +1168,9 @@
     <string name="parent_mode_key_id">Schlüssel-ID: %s</string>
     <string name="parent_mode_help_text">
         Sie haben den Eltern-Schlüssel-Modus gewählt.
-        Dies ermöglicht es, dieses Gerät als Schlüssel zu benutzen.
+        Dies ermöglicht es, dieses Gerät als Schlüssel zu benutzen,
+        indem es im Elternbenutzereintrag am anderen Gerät hinzugefügt wird.
+        Eine Fernsteuerung ist hiermit nicht möglich.
         Wenn das nicht das ist, was Sie wollen,
         dann installieren Sie TimeLimit erneut.
     </string>
@@ -1203,8 +1219,8 @@
     <string name="purchase_one_year">Vollversion für ein Jahr</string>
 
     <string name="purchase_error_not_supported_by_device">Die Bezahlung mittels Google Play wird von Ihrem Gerät nicht unterstützt</string>
-    <string name="purchase_error_not_supported_by_app_variant">Dieser Build hat keine Bezahlmöglichkeit.
-        Wenden Sie sich daher an den Support, um einen Kauf durchzuführen.
+    <string name="purchase_error_not_supported_by_app_variant">Dieser Build hat keine integrierte Bezahlmöglichkeit.
+        https://timelimit.io/de/#how-to-purchase liefert Ihnen weitere Informationen.
     </string>
     <string name="purchase_error_existing_payment">
         Sie haben bereits bezahlt. Sie können die Vollversion erst kurz vor dem Ablaufen (oder danach) verlängern
@@ -1469,8 +1485,8 @@
 
     <string name="usage_stats_permission_required_and_missing_title">Nutzungsdatenzugriff wird benötigt</string>
     <string name="usage_stats_permission_required_and_missing_text">
-        TimeLimit benötigt den Nutzungsdatenzugriff, um korrekt zu funktionieren.
-        Wählen Sie die Option \"Berechtigungen\", um den Nutzungsdatenzugriff zu aktivieren.
+        TimeLimit benötigt diese Berechtigung, um korrekt zu funktionieren.
+        Wählen Sie die Option \"Berechtigungen\", um eine Berechtigung zu erteilen.
     </string>
 
     <string name="activity_launch_permission_required_and_missing_title">Über anderen Apps anzeigen oder Bedienhilfe wird benötigt</string>

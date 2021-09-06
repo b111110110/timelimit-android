@@ -82,6 +82,7 @@ class BackgroundService: Service() {
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                // TODO: Use setForegroundServiceBehavior() when this builder supports it
                 .let { builder ->
                     if (appStatusMessage.showSwitchToDefaultUserOption) {
                         builder.addAction(
@@ -92,7 +93,7 @@ class BackgroundService: Service() {
                                                 context,
                                                 PendingIntentIds.SWITCH_TO_DEFAULT_USER,
                                                 BackgroundActionService.prepareSwitchToDefaultUser(context),
-                                                PendingIntent.FLAG_UPDATE_CURRENT
+                                                PendingIntentIds.PENDING_INTENT_FLAGS
                                         )
                                 ).build()
                         )

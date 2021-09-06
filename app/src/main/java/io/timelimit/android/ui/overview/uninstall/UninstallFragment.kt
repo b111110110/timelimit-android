@@ -34,7 +34,6 @@ import io.timelimit.android.ui.main.ActivityViewModel
 import io.timelimit.android.ui.main.ActivityViewModelHolder
 import io.timelimit.android.ui.main.AuthenticationFab
 import io.timelimit.android.ui.main.FragmentWithCustomTitle
-import kotlinx.android.synthetic.main.single_fragment_wrapper.*
 
 class UninstallFragment : Fragment(), FragmentWithCustomTitle {
     companion object {
@@ -79,21 +78,17 @@ class UninstallFragment : Fragment(), FragmentWithCustomTitle {
             if (it == null) { navigation.popBackStack() }
         }
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
         AuthenticationFab.manageAuthenticationFab(
-                fab = fab,
+                fab = binding.fab,
                 fragment = this,
                 shouldHighlight = activity.getActivityViewModel().shouldHighlightAuthenticationButton,
                 authenticatedUser = activity.getActivityViewModel().authenticatedUser,
                 doesSupportAuth = liveDataFromNonNullValue(!BuildConfig.storeCompilant)
         )
 
-        fab.setOnClickListener { activity.showAuthenticationScreen() }
+        binding.fab.setOnClickListener { activity.showAuthenticationScreen() }
+
+        return binding.root
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

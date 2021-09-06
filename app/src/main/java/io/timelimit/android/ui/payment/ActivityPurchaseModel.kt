@@ -82,8 +82,12 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
             val initBillingClient = _billingClient!!
 
             suspendCoroutine<Unit?> { continuation ->
+                var resumed = false
+
                 initBillingClient.startConnection(object : BillingClientStateListener {
                     override fun onBillingSetupFinished(billingResult: BillingResult) {
+                        if (resumed) return
+
                         try {
                             billingResult.assertSuccess()
 
@@ -96,6 +100,8 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
                             }
 
                             continuation.resumeWithException(BillingNotSupportedException())
+                        } finally {
+                            resumed = true
                         }
                     }
 
@@ -131,11 +137,11 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
     }
 
     suspend fun queryPurchases() = initAndUseClient { client ->
-        val response = client.queryPurchases(BillingClient.SkuType.INAPP)
+        val response = client.queryPurchasesAsync(BillingClient.SkuType.INAPP)
 
         response.billingResult.assertSuccess()
 
-        response.purchasesList!!.filter {
+        response.purchasesList.filter {
             it.purchaseState == Purchase.PurchaseState.PURCHASED
         }
     }
@@ -145,11 +151,11 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
             isWorkingInternal.setTemporarily(true).use {
                 try {
                     initAndUseClient { client ->
-                        val result = client.queryPurchases(BillingClient.SkuType.INAPP)
+                        val result = client.queryPurchasesAsync(BillingClient.SkuType.INAPP)
 
                         result.billingResult.assertSuccess()
 
-                        for (purchase in result.purchasesList!!) {
+                        for (purchase in result.purchasesList) {
                             handlePurchase(purchase, client)
                         }
                     }
@@ -213,7 +219,9 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
             Log.d(LOG_TAG, "handlePurchase($purchase)")
         }
 
-        if (PurchaseIds.SAL_SKUS.contains(purchase.sku)) {
+        val sku = purchase.skus.single()
+
+        if (PurchaseIds.SAL_SKUS.contains(sku)) {
             // just acknowledge
 
             billingClient.acknowledgePurchase(
@@ -221,7 +229,7 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
                             .setPurchaseToken(purchase.purchaseToken)
                             .build()
             ).assertSuccess()
-        } else if (PurchaseIds.BUY_SKUS.contains(purchase.sku)) {
+        } else if (PurchaseIds.BUY_SKUS.contains(sku)) {
             // send and consume
 
             val server = logic.serverLogic.getServerConfigCoroutine()
@@ -245,7 +253,7 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
             }
         } else {
             if (BuildConfig.DEBUG) {
-                Log.d(LOG_TAG, "don't know how to handle ${purchase.sku}")
+                Log.d(LOG_TAG, "don't know how to handle $sku")
             }
         }
     }

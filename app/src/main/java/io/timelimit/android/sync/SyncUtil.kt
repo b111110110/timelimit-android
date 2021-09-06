@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import io.timelimit.android.sync.network.api.UnauthorizedHttpError
 import io.timelimit.android.ui.IsAppInForeground
 import io.timelimit.android.work.SyncInBackgroundWorker
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -190,8 +191,7 @@ class SyncUtil (private val logic: AppLogic) {
             }
 
             try {
-                pushActions(server = server)
-                pullStatus(server = server)
+                doSyncRoundRetryOnNewActions(server)
 
                 logic.syncNotificationLogic.sync(forceUiSync = false)
             } catch (ex: UnauthorizedHttpError) {
@@ -212,6 +212,33 @@ class SyncUtil (private val logic: AppLogic) {
                 }
             }
         }
+    }
+
+    private suspend fun doSyncRoundRetryOnNewActions(server: ServerLogic.ServerConfig) {
+        // retry two times
+        for (i in 1..2) {
+            try {
+                doSyncRound(server = server)
+
+                return
+            } catch (ex: ApplyServerDataStatus.PendingSyncActionException) {
+                if (BuildConfig.DEBUG) {
+                    Log.d(LOG_TAG, "got new actions while receiving the status => retry")
+                }
+
+                delay(250)
+
+                continue
+            }
+        }
+
+        // and do not catch at the last time
+        doSyncRound(server = server)
+    }
+
+    private suspend fun doSyncRound(server: ServerLogic.ServerConfig) {
+        pushActions(server = server)
+        pullStatus(server = server)
     }
 
     private suspend fun pushActions(server: ServerLogic.ServerConfig) {

@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,8 +17,12 @@ package io.timelimit.android.work
 
 import android.content.Context
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.work.*
 import io.timelimit.android.BuildConfig
+import io.timelimit.android.R
+import io.timelimit.android.integration.platform.android.NotificationChannels
+import io.timelimit.android.integration.platform.android.NotificationIds
 import io.timelimit.android.logic.DefaultAppLogic
 import io.timelimit.android.sync.SyncingDisabledException
 import kotlinx.coroutines.Dispatchers
@@ -36,17 +40,17 @@ class SyncInBackgroundWorker(val context: Context, workerParameters: WorkerParam
             }
 
             WorkManager.getInstance().beginUniqueWork(
-                    UNIQUE_WORK_NAME,
-                    ExistingWorkPolicy.KEEP,
-                    OneTimeWorkRequest.Builder(SyncInBackgroundWorker::class.java)
-                            .setInitialDelay(10, TimeUnit.SECONDS)
-                            .setConstraints(
-                                    Constraints.Builder()
-                                            .setRequiredNetworkType(NetworkType.CONNECTED)
-                                            .setRequiresBatteryNotLow(true)
-                                            .build()
-                            )
+                UNIQUE_WORK_NAME,
+                ExistingWorkPolicy.KEEP,
+                OneTimeWorkRequest.Builder(SyncInBackgroundWorker::class.java)
+                    .setInitialDelay(10, TimeUnit.SECONDS)
+                    .setConstraints(
+                        Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
                             .build()
+                    )
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .build()
             ).enqueue()
         }
 
@@ -84,4 +88,19 @@ class SyncInBackgroundWorker(val context: Context, workerParameters: WorkerParam
             }
         }
     }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo = ForegroundInfo(
+            NotificationIds.WORKER_SYNC_BACKGROUND,
+            NotificationCompat.Builder(context, NotificationChannels.BACKGROUND_SYNC_NOTIFICATION)
+                    .setSmallIcon(R.drawable.ic_stat_timelapse)
+                    .setContentTitle(context.getString(R.string.notification_background_sync_title))
+                    .setContentText(context.getString(R.string.notification_background_sync_text))
+                    .setWhen(0)
+                    .setShowWhen(false)
+                    .setAutoCancel(false)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
+                    .setOnlyAlertOnce(true)
+                    .build(),
+            0
+    )
 }

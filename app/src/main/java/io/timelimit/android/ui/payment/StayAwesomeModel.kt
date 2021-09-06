@@ -48,7 +48,7 @@ class StayAwesomeModel(application: Application): AndroidViewModel(application) 
                                     id = skuId,
                                     title = sku?.description ?: skuId,
                                     price = sku?.price ?: "???",
-                                    bought = purchases.find { it.sku == skuId } != null
+                                    bought = purchases.find { purchase -> purchase.skus.find { sku -> sku == skuId } != null } != null
                             )
                         }
                 )

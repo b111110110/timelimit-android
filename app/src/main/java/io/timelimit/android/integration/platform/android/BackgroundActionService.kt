@@ -56,7 +56,7 @@ class BackgroundActionService: Service() {
                 context,
                 PendingIntentIds.OPEN_MAIN_APP,
                 Intent(context, MainActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntentIds.PENDING_INTENT_FLAGS
         )
 
         fun getSyncNotificationsPendingIntent(context: Context) = PendingIntent.getService(
@@ -64,7 +64,7 @@ class BackgroundActionService: Service() {
                 PendingIntentIds.SYNC_NOTIFICATIONS,
                 Intent(context, BackgroundActionService::class.java)
                         .putExtra(ACTION, ACTION_UPDATE_NOTIFICATION),
-                PendingIntent.FLAG_UPDATE_CURRENT
+                PendingIntentIds.PENDING_INTENT_FLAGS
         )
     }
 

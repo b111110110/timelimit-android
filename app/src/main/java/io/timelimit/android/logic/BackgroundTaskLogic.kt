@@ -128,6 +128,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
             timeApi = appLogic.timeApi,
             longDuration = 1000 * 60 * 10 /* 10 minutes */
     )
+    private val undisturbedCategoryUsageCounter = UndisturbedCategoryUsageCounter()
 
     private val appTitleCache = QueryAppTitleCache(appLogic.platformIntegration)
     private val categoryHandlingCache = CategoryHandlingCache()
@@ -194,6 +195,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
             // app must be enabled
             if (!appLogic.enable.waitForNonNullValue()) {
                 commitUsedTimeUpdaters()
+                undisturbedCategoryUsageCounter.reset()
                 appLogic.platformIntegration.setAppStatusMessage(null)
                 appLogic.platformIntegration.setShowBlockingOverlay(false)
                 setShowNotificationToRevokeTemporarilyAllowedApps(false)
@@ -215,6 +217,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
             // device must be used by a child
             if (deviceRelatedData == null || userRelatedData == null || userRelatedData.user.type != UserType.Child) {
                 commitUsedTimeUpdaters()
+                undisturbedCategoryUsageCounter.reset()
 
                 val shouldDoAutomaticSignOut = deviceRelatedData != null && DefaultUserLogic.hasAutomaticSignOut(deviceRelatedData) && deviceRelatedData.canSwitchToDefaultUser
 
@@ -248,6 +251,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
 
                 val nowTimestamp = realTime.timeInMillis
                 val nowTimezone = TimeZone.getTimeZone(userRelatedData.user.timeZone)
+                val nowUptime = appLogic.timeApi.getCurrentUptimeInMillis()
 
                 val nowDate = DateInTimezone.getLocalDate(nowTimestamp, nowTimezone)
                 val nowMinuteOfWeek = getMinuteOfWeek(nowTimestamp, nowTimezone)
@@ -323,6 +327,9 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                     if (it is AppBaseHandling.UseCategories) it.categoryIds else emptySet()
                 }.flattenToSet()
 
+                undisturbedCategoryUsageCounter.report(nowUptime, currentCategoryIds)
+                val recentlyStartedCategories = undisturbedCategoryUsageCounter.getRecentlyStartedCategories(nowUptime)
+
                 val needsNetworkId = allAppsBaseHandlings.find { it.needsNetworkId() } != null
                 val networkId: NetworkId? = if (needsNetworkId) appLogic.platformIntegration.getCurrentNetworkId() else null
 
@@ -339,8 +346,6 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                 }; reportStatusToCategoryHandlingCache(userRelatedData)
 
                 // check if should be blocked
-                val allCategoriesWithRemainingTimeBeforeAddingUsedTime = currentCategoryIds.filter { categoryHandlingCache.get(it).hasRemainingTime }
-
                 val blockedForegroundApp = foregroundAppWithBaseHandlings.find { (_, foregroundAppBaseHandling) ->
                     foregroundAppBaseHandling is AppBaseHandling.BlockDueToNoCategory ||
                             (foregroundAppBaseHandling is AppBaseHandling.UseCategories && foregroundAppBaseHandling.categoryIds.find {
@@ -498,7 +503,8 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         duration = timeToSubtract,
                         dayOfEpoch = dayOfEpoch,
                         trustedTimestamp = if (realTime.shouldTrustTimePermanently) realTime.timeInMillis else 0,
-                        handlings = categoryHandlingsToCount
+                        handlings = categoryHandlingsToCount,
+                        recentlyStartedCategories = recentlyStartedCategories
                 )
 
                 if (didAutoCommitOfUsedTimes) {
@@ -828,7 +834,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
 
     fun syncDeviceStatusAsync() {
         runAsync {
-            syncDeviceStatus()
+            syncDeviceStatusFast()
         }
     }
 
@@ -836,7 +842,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
         while (true) {
             appLogic.deviceEntryIfEnabled.waitUntilValueMatches { it != null }
 
-            syncDeviceStatus()
+            syncDeviceStatusSlow()
 
             appLogic.timeApi.sleep(CHECK_PERMISSION_INTERVAL)
         }
@@ -860,65 +866,92 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
         }
     }
 
-    private suspend fun syncDeviceStatus() {
+    private suspend fun getUpdateDeviceStatusAction(): UpdateDeviceStatusAction {
+        val deviceEntry = appLogic.deviceEntry.waitForNullableValue()
+
+        var changes = UpdateDeviceStatusAction.empty
+
+        if (deviceEntry != null) {
+            val protectionLevel = appLogic.platformIntegration.getCurrentProtectionLevel()
+            val usageStatsPermission = appLogic.platformIntegration.getForegroundAppPermissionStatus()
+            val notificationAccess = appLogic.platformIntegration.getNotificationAccessPermissionStatus()
+            val overlayPermission = appLogic.platformIntegration.getOverlayPermissionStatus()
+            val accessibilityService = appLogic.platformIntegration.isAccessibilityServiceEnabled()
+            val qOrLater = AndroidVersion.qOrLater
+
+            if (protectionLevel != deviceEntry.currentProtectionLevel) {
+                changes = changes.copy(
+                        newProtectionLevel = protectionLevel
+                )
+
+                if (protectionLevel == ProtectionLevel.DeviceOwner) {
+                    appLogic.platformIntegration.setEnableSystemLockdown(true)
+                }
+            }
+
+            if (usageStatsPermission != deviceEntry.currentUsageStatsPermission) {
+                changes = changes.copy(
+                        newUsageStatsPermissionStatus = usageStatsPermission
+                )
+            }
+
+            if (notificationAccess != deviceEntry.currentNotificationAccessPermission) {
+                changes = changes.copy(
+                        newNotificationAccessPermission = notificationAccess
+                )
+            }
+
+            if (overlayPermission != deviceEntry.currentOverlayPermission) {
+                changes = changes.copy(
+                        newOverlayPermission = overlayPermission
+                )
+            }
+
+            if (accessibilityService != deviceEntry.accessibilityServiceEnabled) {
+                changes = changes.copy(
+                        newAccessibilityServiceEnabled = accessibilityService
+                )
+            }
+
+            if (qOrLater && !deviceEntry.qOrLater) {
+                changes = changes.copy(isQOrLaterNow = true)
+            }
+        }
+
+        return changes
+    }
+
+    private suspend fun syncDeviceStatusFast() {
         syncDeviceStatusLock.withLock {
-            val deviceEntry = appLogic.deviceEntry.waitForNullableValue()
+            val changes = getUpdateDeviceStatusAction()
 
-            if (deviceEntry != null) {
-                val protectionLevel = appLogic.platformIntegration.getCurrentProtectionLevel()
-                val usageStatsPermission = appLogic.platformIntegration.getForegroundAppPermissionStatus()
-                val notificationAccess = appLogic.platformIntegration.getNotificationAccessPermissionStatus()
-                val overlayPermission = appLogic.platformIntegration.getOverlayPermissionStatus()
-                val accessibilityService = appLogic.platformIntegration.isAccessibilityServiceEnabled()
-                val qOrLater = AndroidVersion.qOrLater
+            if (changes != UpdateDeviceStatusAction.empty) {
+                ApplyActionUtil.applyAppLogicAction(
+                        action = changes,
+                        appLogic = appLogic,
+                        ignoreIfDeviceIsNotConfigured = true
+                )
+            }
+        }
+    }
 
-                var changes = UpdateDeviceStatusAction.empty
+    private suspend fun syncDeviceStatusSlow() {
+        syncDeviceStatusLock.withLock {
+            val changesOne = getUpdateDeviceStatusAction()
 
-                if (protectionLevel != deviceEntry.currentProtectionLevel) {
-                    changes = changes.copy(
-                            newProtectionLevel = protectionLevel
-                    )
+            delay(2000)
 
-                    if (protectionLevel == ProtectionLevel.DeviceOwner) {
-                        appLogic.platformIntegration.setEnableSystemLockdown(true)
-                    }
-                }
+            val changesTwo = getUpdateDeviceStatusAction()
 
-                if (usageStatsPermission != deviceEntry.currentUsageStatsPermission) {
-                    changes = changes.copy(
-                            newUsageStatsPermissionStatus = usageStatsPermission
-                    )
-                }
-
-                if (notificationAccess != deviceEntry.currentNotificationAccessPermission) {
-                    changes = changes.copy(
-                            newNotificationAccessPermission = notificationAccess
-                    )
-                }
-
-                if (overlayPermission != deviceEntry.currentOverlayPermission) {
-                    changes = changes.copy(
-                            newOverlayPermission = overlayPermission
-                    )
-                }
-
-                if (accessibilityService != deviceEntry.accessibilityServiceEnabled) {
-                    changes = changes.copy(
-                            newAccessibilityServiceEnabled = accessibilityService
-                    )
-                }
-
-                if (qOrLater && !deviceEntry.qOrLater) {
-                    changes = changes.copy(isQOrLaterNow = true)
-                }
-
-                if (changes != UpdateDeviceStatusAction.empty) {
-                    ApplyActionUtil.applyAppLogicAction(
-                            action = changes,
-                            appLogic = appLogic,
-                            ignoreIfDeviceIsNotConfigured = true
-                    )
-                }
+            if (
+                    changesOne != UpdateDeviceStatusAction.empty &&
+                    changesOne == changesTwo
+            ) {
+                ApplyActionUtil.applyAppLogicAction(
+                        action = changesOne,
+                        appLogic = appLogic,
+                        ignoreIfDeviceIsNotConfigured = true
+                )
             }
         }
     }

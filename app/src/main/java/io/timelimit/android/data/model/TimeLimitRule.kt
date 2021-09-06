@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import io.timelimit.android.data.customtypes.ImmutableBitmaskAdapter
 import io.timelimit.android.extensions.MinuteOfDay
 import io.timelimit.android.livedata.ignoreUnchanged
 import io.timelimit.android.livedata.map
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Entity(tableName = "time_limit_rule")
 @TypeConverters(ImmutableBitmaskAdapter::class)

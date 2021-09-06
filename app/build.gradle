@@ -16,22 +16,18 @@
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-parcelize'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 apply plugin: 'kotlin-kapt'
 
-androidExtensions {
-    experimental = true
-}
-
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         applicationId "io.timelimit.android"
         minSdkVersion 21
-        targetSdkVersion 30
-        versionCode 155
-        versionName "4.9.0"
+        targetSdkVersion 31
+        versionCode 172
+        versionName "5.2.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         kapt {
             arguments {
@@ -48,6 +44,9 @@ android {
         // get with unzip -p *.apk META-INF/CERT.RSA | keytool -printcert | grep SHA256 | sed -e 's/\s*SHA256: //' -e 's/://g'
         // set to empty string to disable this check
         buildConfigField 'String', 'updateServerBuildsCertificate', '"2170068198547F15129DE8CC46E2A8BF1485A6E5030916E26DDE41AE0E81DAC2"'
+    }
+    buildFeatures {
+        viewBinding true
     }
 
     flavorDimensions 'api', 'channel', 'server'
@@ -153,22 +152,22 @@ android {
 }
 
 dependencies {
-    def nav_version = "2.2.1"
-    def room_version = "2.2.6"
-    def work_version = '2.3.4'
-    def paging_version = "2.1.2"
+    def nav_version = "2.3.5"
+    def room_version = "2.3.0"
+    def work_version = '2.7.0-beta01'
+    def paging_version = "3.0.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation "com.google.android.material:material:1.3.0"
-    implementation 'androidx.fragment:fragment-ktx:1.3.1'
+    implementation "com.google.android.material:material:1.4.0"
+    implementation 'androidx.fragment:fragment-ktx:1.3.6'
 
-    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
-    implementation "android.arch.navigation:navigation-ui:$nav_version"
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     implementation "androidx.room:room-runtime:$room_version"
@@ -178,16 +177,16 @@ dependencies {
 
     implementation "androidx.paging:paging-runtime:$paging_version"
 
-    implementation "android.arch.work:work-runtime:$work_version"
-    implementation "android.arch.work:work-runtime-ktx:$work_version"
-    androidTestImplementation "android.arch.work:work-testing:$work_version"
+    implementation "androidx.work:work-runtime:$work_version"
+    implementation "androidx.work:work-runtime-ktx:$work_version"
+    // androidTestImplementation "android.arch.work:work-testing:$work_version"
 
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.0'
 
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test:runner:1.3.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    androidTestImplementation 'androidx.test:runner:1.4.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
     implementation 'com.jakewharton.threetenabp:threetenabp:1.1.0'
 
@@ -203,8 +202,8 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp-tls:4.9.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.1'
 
-    googleApiImplementation "com.android.billingclient:billing:3.0.3"
-    googleApiImplementation "com.android.billingclient:billing-ktx:3.0.3"
+    googleApiImplementation "com.android.billingclient:billing:4.0.0"
+    googleApiImplementation "com.android.billingclient:billing-ktx:4.0.0"
 
     implementation('io.socket:socket.io-client:2.0.0') {
         exclude group: 'org.json', module: 'json'
