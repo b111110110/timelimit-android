@@ -1115,7 +1115,7 @@
     </string>
 
     <string name="notification_channel_app_status_title">Apps status</string>
-    <string name="notification_channel_app_status_description">Shows amongst other things the reamining time for the currently used App</string>
+    <string name="notification_channel_app_status_description">Shows amongst other things the remaining time for the currently used App</string>
 
     <string name="notification_channel_blocked_notification_title">blocked notifications</string>
     <string name="notification_channel_blocked_notification_text">Shows when a notification was blocked by TimeLimit</string>
