@@ -82,7 +82,7 @@ class BackgroundService: Service() {
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET)
-                // TODO: Use setForegroundServiceBehavior() when this builder supports it
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
                 .let { builder ->
                     if (appStatusMessage.showSwitchToDefaultUserOption) {
                         builder.addAction(
