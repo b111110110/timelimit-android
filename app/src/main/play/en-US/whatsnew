@@ -1,3 +1,2 @@
-- fixed issues related to the background sync
-- small text changes
-- updated dependencies
+- fix issues when selecting days of the week with a mouse
+- disabled delay of the status notifications at Android 12
