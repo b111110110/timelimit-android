@@ -508,6 +508,10 @@
     <string name="diagnose_bat_status_mobile">Entladen</string>
     <string name="diagnose_bat_level">Akkustand: %d\%%</string>
 
+    <string name="diagnose_don_title">Gerätebesitzerorganisationsname</string>
+    <string name="diagnose_don_no_owner_toast">TimeLimit ist KEIN Geräte-Besitzer</string>
+    <string name="diagnose_don_not_supported_toast">Ihr System ermöglicht es nicht, einen Organisationsnamen zu hinterlegen</string>
+
     <string name="dont_ask_password_on_device_title">Passwortabfrage</string>
     <string name="dont_ask_password_on_device_text_enabled">
         Die Passwortabfrage ist an diesem Gerät aktiviert.

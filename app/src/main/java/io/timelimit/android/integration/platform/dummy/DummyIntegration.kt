@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -179,4 +179,7 @@ class DummyIntegration(
     override fun restartApp() = Unit
 
     override fun getCurrentNetworkId(): NetworkId = NetworkId.NoNetworkConnected
+
+    override fun canSetOrganizationName(): Boolean = false
+    override fun setOrganizationName(name: String): Boolean = false
 }

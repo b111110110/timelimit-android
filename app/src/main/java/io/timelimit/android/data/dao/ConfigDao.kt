@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,6 +51,13 @@ abstract class ConfigDao {
 
     private fun getValueOfKeySync(key: ConfigurationItemType): String? {
         return getRowByKeySync(key)?.value
+    }
+
+    @Query("SELECT * FROM config WHERE id = :key")
+    protected abstract suspend fun getRowCoroutine(key: ConfigurationItemType): ConfigurationItem?
+
+    private suspend fun getValueOfKeyCoroutine(key: ConfigurationItemType): String? {
+        return getRowCoroutine(key)?.value
     }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -316,4 +323,7 @@ abstract class ConfigDao {
                 it.buffer.toString()
             }
     )
+
+    suspend fun getCustomOrganizationName(): String = getValueOfKeyCoroutine(ConfigurationItemType.CustomOrganizationName) ?: ""
+    fun setCustomOrganizationName(value: String) = updateValueSync(ConfigurationItemType.CustomOrganizationName, value)
 }

@@ -26,8 +26,11 @@ import androidx.navigation.Navigation
 import io.timelimit.android.R
 import io.timelimit.android.databinding.FragmentDiagnoseMainBinding
 import io.timelimit.android.extensions.safeNavigate
+import io.timelimit.android.livedata.liveDataFromNonNullValue
 import io.timelimit.android.livedata.liveDataFromNullableValue
 import io.timelimit.android.logic.DefaultAppLogic
+import io.timelimit.android.ui.main.ActivityViewModelHolder
+import io.timelimit.android.ui.main.AuthenticationFab
 import io.timelimit.android.ui.main.FragmentWithCustomTitle
 
 class DiagnoseMainFragment : Fragment(), FragmentWithCustomTitle {
@@ -35,6 +38,8 @@ class DiagnoseMainFragment : Fragment(), FragmentWithCustomTitle {
         val binding = FragmentDiagnoseMainBinding.inflate(inflater, container, false)
         val navigation = Navigation.findNavController(container!!)
         val logic = DefaultAppLogic.with(requireContext())
+        val activity: ActivityViewModelHolder = activity as ActivityViewModelHolder
+        val auth = activity.getActivityViewModel()
 
         binding.diagnoseClockButton.setOnClickListener {
             navigation.safeNavigate(
@@ -88,6 +93,22 @@ class DiagnoseMainFragment : Fragment(), FragmentWithCustomTitle {
                 binding.diagnoseBgTaskLoopExButton.isEnabled = false
             }
         })
+
+        binding.diagnoseOrganizationNameButton.setOnClickListener {
+            if (auth.requestAuthenticationOrReturnTrue()) {
+                DiagnoseOrganizationNameDialogFragment.newInstance().show(parentFragmentManager)
+            }
+        }
+
+        AuthenticationFab.manageAuthenticationFab(
+            fab = binding.fab,
+            shouldHighlight = auth.shouldHighlightAuthenticationButton,
+            authenticatedUser = auth.authenticatedUser,
+            doesSupportAuth = liveDataFromNonNullValue(true),
+            fragment = this
+        )
+
+        binding.fab.setOnClickListener { activity.showAuthenticationScreen() }
 
         return binding.root
     }

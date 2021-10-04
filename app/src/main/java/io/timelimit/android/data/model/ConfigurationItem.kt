@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,8 @@ enum class ConfigurationItemType {
     HomescreenDelay,
     ParentModeKey,
     EnableUpdates,
-    UpdateStatus
+    UpdateStatus,
+    CustomOrganizationName
 }
 
 object ConfigurationItemTypeUtil {
@@ -122,6 +123,7 @@ object ConfigurationItemTypeUtil {
     private const val PARENT_MODE_KEY = 20
     private const val ENABLE_UPDATES = 21
     private const val UPDATE_STATUS = 22
+    private const val CUSTOM_ORGANIZATION_NAME = 23
 
     val TYPES = listOf(
             ConfigurationItemType.OwnDeviceId,
@@ -144,7 +146,8 @@ object ConfigurationItemTypeUtil {
             ConfigurationItemType.HomescreenDelay,
             ConfigurationItemType.ParentModeKey,
             ConfigurationItemType.EnableUpdates,
-            ConfigurationItemType.UpdateStatus
+            ConfigurationItemType.UpdateStatus,
+            ConfigurationItemType.CustomOrganizationName
     )
 
     fun serialize(value: ConfigurationItemType) = when(value) {
@@ -169,6 +172,7 @@ object ConfigurationItemTypeUtil {
         ConfigurationItemType.ParentModeKey -> PARENT_MODE_KEY
         ConfigurationItemType.EnableUpdates -> ENABLE_UPDATES
         ConfigurationItemType.UpdateStatus -> UPDATE_STATUS
+        ConfigurationItemType.CustomOrganizationName -> CUSTOM_ORGANIZATION_NAME
     }
 
     fun parse(value: Int) = when(value) {
@@ -193,6 +197,7 @@ object ConfigurationItemTypeUtil {
         PARENT_MODE_KEY -> ConfigurationItemType.ParentModeKey
         ENABLE_UPDATES -> ConfigurationItemType.EnableUpdates
         UPDATE_STATUS -> ConfigurationItemType.UpdateStatus
+        CUSTOM_ORGANIZATION_NAME -> ConfigurationItemType.CustomOrganizationName
         else -> throw IllegalArgumentException()
     }
 }

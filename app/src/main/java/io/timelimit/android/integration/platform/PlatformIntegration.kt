@@ -72,6 +72,8 @@ abstract class PlatformIntegration(
 
     // this function requires the device owner permission and a recent android version
     abstract fun setForceNetworkTime(enable: Boolean)
+    abstract fun canSetOrganizationName(): Boolean
+    abstract fun setOrganizationName(name: String): Boolean
 
     abstract fun restartApp()
 
