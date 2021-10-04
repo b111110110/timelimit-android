@@ -481,6 +481,10 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
                 policyManager.isDeviceOwnerApp(context.packageName) &&
                 (!BuildConfig.storeCompilant)
         ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                policyManager.setBackupServiceEnabled(deviceAdmin, true)
+            }
+
             if (enableLockdown) {
                 // disable problematic features
                 policyManager.addUserRestriction(deviceAdmin, UserManager.DISALLOW_ADD_USER)
