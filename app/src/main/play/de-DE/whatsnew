@@ -1,2 +1,4 @@
-- Probleme bei der Auswahl von Wochentagen mit der Maus behoben
-- Verzögerung beim Anzeigen der Statusbenachrichtigung unter Android 12 deaktiviert
+- Abhängigkeiten aktualisiert
+- Änderungen bei aktivem Geräte-Besitzer
+  - Backup-Service-Funktion vom System freigeschaltet
+  - einstellbarer Organisationsname
