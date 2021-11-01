@@ -55,6 +55,7 @@ import io.timelimit.android.ui.lock.LockActivity
 import io.timelimit.android.ui.manage.device.manage.permission.AdbDeviceAdminDialogFragment
 import io.timelimit.android.ui.manage.device.manage.permission.AdbUsageStatsDialogFragment
 import io.timelimit.android.ui.manage.device.manage.permission.InformAboutDeviceOwnerDialogFragment
+import io.timelimit.android.ui.manage.device.manage.permission.PermissionInfoConfirmDialog
 import io.timelimit.android.ui.manipulation.AnnoyActivity
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consumeEach
@@ -648,7 +649,10 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
             val protectionLevel = getCurrentProtectionLevel()
 
             if (protectionLevel == ProtectionLevel.None) {
-                if (
+                if (confirmationLevel == SystemPermissionConfirmationLevel.None) {
+                    PermissionInfoConfirmDialog.newInstance(SystemPermission.DeviceAdmin)
+                        .show(activity.supportFragmentManager)
+                } else if (
                     InformAboutDeviceOwnerDialogFragment.shouldShow &&
                     confirmationLevel != SystemPermissionConfirmationLevel.Suggestion
                 ) {
@@ -680,30 +684,95 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
             true
         }
         SystemPermission.UsageStats -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // According to user reports, some devices open the wrong screen
-            // with the Settings.ACTION_USAGE_ACCESS_SETTINGS
-            // but using an activity launcher to open this intent works for them.
-            // This intent works at regular android too, so try this first
-            // and use the "correct" one as fallback.
-
-            try {
-                activity.startActivity(
-                    Intent()
-                        .setClassName("com.android.settings", "com.android.settings.Settings\$UsageAccessSettingsActivity")
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                )
+            if (
+                foregroundAppHelper.getPermissionStatus() == RuntimePermissionStatus.NotGranted &&
+                confirmationLevel == SystemPermissionConfirmationLevel.None
+            ) {
+                PermissionInfoConfirmDialog.newInstance(SystemPermission.UsageStats)
+                    .show(activity.supportFragmentManager)
 
                 true
-            } catch (ex: Exception) {
+            } else {
+                // According to user reports, some devices open the wrong screen
+                // with the Settings.ACTION_USAGE_ACCESS_SETTINGS
+                // but using an activity launcher to open this intent works for them.
+                // This intent works at regular android too, so try this first
+                // and use the "correct" one as fallback.
+
                 try {
                     activity.startActivity(
-                        Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                        Intent()
+                            .setClassName(
+                                "com.android.settings",
+                                "com.android.settings.Settings\$UsageAccessSettingsActivity"
+                            )
                             .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
 
                     true
                 } catch (ex: Exception) {
-                    AdbUsageStatsDialogFragment().show(activity.supportFragmentManager)
+                    try {
+                        activity.startActivity(
+                            Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
+                                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        )
+
+                        true
+                    } catch (ex: Exception) {
+                        AdbUsageStatsDialogFragment().show(activity.supportFragmentManager)
+
+                        false
+                    }
+                }
+            }
+        } else {
+            Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
+
+            false
+        }
+        SystemPermission.Notification -> if (
+            getNotificationAccessPermissionStatus() == NewPermissionStatus.NotGranted &&
+            confirmationLevel == SystemPermissionConfirmationLevel.None
+        ) {
+            PermissionInfoConfirmDialog.newInstance(SystemPermission.Notification)
+                .show(activity.supportFragmentManager)
+
+            true
+        } else {
+            try {
+                activity.startActivity(
+                    Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                )
+
+                true
+            } catch (ex: Exception) {
+                Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
+
+                false
+            }
+        }
+        SystemPermission.Overlay -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (
+                overlay.getOverlayPermissionStatus() == RuntimePermissionStatus.NotGranted &&
+                confirmationLevel == SystemPermissionConfirmationLevel.None
+            ) {
+                PermissionInfoConfirmDialog.newInstance(SystemPermission.Overlay)
+                    .show(activity.supportFragmentManager)
+
+                true
+            } else {
+                try {
+                    activity.startActivity(
+                        Intent(
+                            Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + context!!.packageName)
+                        )
+                    )
+
+                    true
+                } catch (ex: Exception) {
+                    Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
 
                     false
                 }
@@ -713,25 +782,19 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
 
             false
         }
-        SystemPermission.Notification -> try {
-            activity.startActivity(
-                Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS")
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
+        SystemPermission.AccessibilityService -> if (
+            !isAccessibilityServiceEnabled() &&
+            confirmationLevel == SystemPermissionConfirmationLevel.None
+        ) {
+            PermissionInfoConfirmDialog.newInstance(SystemPermission.AccessibilityService)
+                .show(activity.supportFragmentManager)
 
             true
-        } catch (ex: Exception) {
-            Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
-
-            false
-        }
-        SystemPermission.Overlay -> if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        } else {
             try {
                 activity.startActivity(
-                    Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context!!.packageName)
-                    )
+                    Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 )
 
                 true
@@ -740,22 +803,6 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
 
                 false
             }
-        } else {
-            Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
-
-            false
-        }
-        SystemPermission.AccessibilityService -> try {
-            activity.startActivity(
-                Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
-                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            )
-
-            true
-        } catch (ex: Exception) {
-            Toast.makeText(context, R.string.error_general, Toast.LENGTH_SHORT).show()
-
-            false
         }
     }
 }
