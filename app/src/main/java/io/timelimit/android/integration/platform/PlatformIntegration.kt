@@ -17,6 +17,7 @@ package io.timelimit.android.integration.platform
 
 import android.graphics.drawable.Drawable
 import android.os.Parcelable
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.room.TypeConverter
 import io.timelimit.android.data.model.App
@@ -78,6 +79,13 @@ abstract class PlatformIntegration(
     abstract fun restartApp()
 
     abstract fun getCurrentNetworkId(): NetworkId
+
+    // returns false on failure
+    abstract fun openSystemPermissionScren(
+        activity: FragmentActivity,
+        permission: SystemPermission,
+        confirmationLevel: SystemPermissionConfirmationLevel = SystemPermissionConfirmationLevel.None
+    ): Boolean
 
     var installedAppsChangeListener: Runnable? = null
     var systemClockChangeListener: Runnable? = null
@@ -227,4 +235,18 @@ sealed class NetworkId {
     object NoNetworkConnected : NetworkId()
     object MissingPermission: NetworkId()
     data class Network(val id: String): NetworkId()
+}
+
+enum class SystemPermission {
+    DeviceAdmin,
+    UsageStats,
+    Notification,
+    Overlay,
+    AccessibilityService
+}
+
+enum class SystemPermissionConfirmationLevel {
+    None,
+    PermissionInfo,
+    Suggestion
 }

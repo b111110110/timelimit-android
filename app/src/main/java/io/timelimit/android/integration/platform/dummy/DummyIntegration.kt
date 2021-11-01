@@ -16,6 +16,7 @@
 package io.timelimit.android.integration.platform.dummy
 
 import android.graphics.drawable.Drawable
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import io.timelimit.android.data.model.App
@@ -182,4 +183,10 @@ class DummyIntegration(
 
     override fun canSetOrganizationName(): Boolean = false
     override fun setOrganizationName(name: String): Boolean = false
+
+    override fun openSystemPermissionScren(
+        activity: FragmentActivity,
+        permission: SystemPermission,
+        confirmationLevel: SystemPermissionConfirmationLevel
+    ): Boolean = false
 }
