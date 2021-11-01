@@ -767,7 +767,7 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
                         Intent(
                             Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                             Uri.parse("package:" + context!!.packageName)
-                        )
+                        ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     )
 
                     true
