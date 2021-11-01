@@ -954,6 +954,9 @@
     </string>
 
     <string name="manage_device_permission_device_admin_title">Device admin</string>
+    <string name="manage_device_permission_device_admin_text">The device admin/owner permission
+        can depending on circumstances be used to detect/prevent manipulations.
+    </string>
     <string name="manage_device_permission_device_admin_text_disabled">
         The device admin permission was not granted.
         TimeLimit can be stopped at any time using the system settings.

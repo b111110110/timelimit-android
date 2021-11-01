@@ -28,7 +28,7 @@ import io.timelimit.android.extensions.safeNavigate
 import io.timelimit.android.integration.platform.SystemPermission
 import io.timelimit.android.logic.AppLogic
 import io.timelimit.android.logic.DefaultAppLogic
-import io.timelimit.android.ui.help.HelpDialogFragment
+import io.timelimit.android.ui.manage.device.manage.permission.PermissionInfoHelpDialog
 
 class SetupDevicePermissionsFragment : Fragment() {
     private val logic: AppLogic by lazy { DefaultAppLogic.with(context!!) }
@@ -79,31 +79,19 @@ class SetupDevicePermissionsFragment : Fragment() {
             }
 
             override fun helpUsageStatsAccess() {
-                HelpDialogFragment.newInstance(
-                        title = R.string.manage_device_permissions_usagestats_title,
-                        text = R.string.manage_device_permissions_usagestats_text
-                ).show(fragmentManager!!)
+                PermissionInfoHelpDialog.show(requireActivity(), SystemPermission.UsageStats)
             }
 
             override fun helpNotificationAccess() {
-                HelpDialogFragment.newInstance(
-                        title = R.string.manage_device_permission_notification_access_title,
-                        text = R.string.manage_device_permission_notification_access_text
-                ).show(fragmentManager!!)
+                PermissionInfoHelpDialog.show(requireActivity(), SystemPermission.Notification)
             }
 
             override fun helpDrawOverOtherApps() {
-                HelpDialogFragment.newInstance(
-                        title = R.string.manage_device_permissions_overlay_title,
-                        text = R.string.manage_device_permissions_overlay_text
-                ).show(fragmentManager!!)
+                PermissionInfoHelpDialog.show(requireActivity(), SystemPermission.Overlay)
             }
 
             override fun helpAccesibility() {
-                HelpDialogFragment.newInstance(
-                        title = R.string.manage_device_permission_accessibility_title,
-                        text = R.string.manage_device_permission_accessibility_text
-                ).show(fragmentManager!!)
+                PermissionInfoHelpDialog.show(requireActivity(), SystemPermission.AccessibilityService)
             }
         }
 

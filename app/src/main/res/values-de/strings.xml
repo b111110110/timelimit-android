@@ -910,6 +910,9 @@
     </string>
 
     <string name="manage_device_permission_device_admin_title">Geräte-Administrator</string>
+    <string name="manage_device_permission_device_admin_text">Der Geräte-Administrator bzw.
+        Geräte-Besitzer kann abhängig von den Umständen verwendet werden, um Manipulationen zu erkennen oder zu verhindern.
+    </string>
     <string name="manage_device_permission_device_admin_text_disabled">
         Die Geräte-Administrator-Berechtigung wurde nicht gewährt. TimeLimit kann jederzeit über die Systemeinstellungen beendet werden.
     </string>
