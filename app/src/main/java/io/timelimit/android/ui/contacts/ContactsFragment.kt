@@ -27,6 +27,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -233,19 +234,39 @@ class ContactsFragment : Fragment(), FragmentWithCustomTitle {
             activityModelHolder.ignoreStop = false
 
             if (resultCode == Activity.RESULT_OK) {
-                data?.data?.let { contactData ->
-                    val cursor = requireContext().contentResolver.query(contactData, null, null, null, null)
+                try {
+                    data?.data?.let { contactData ->
+                        val cursor = requireContext().contentResolver.query(
+                            contactData,
+                            null,
+                            null,
+                            null,
+                            null
+                        )
 
-                    cursor?.use {
-                        if (cursor.moveToFirst()) {
-                            val title = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME))
-                            val phoneNumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                        cursor?.use {
+                            if (cursor.moveToFirst()) {
+                                val title =
+                                    cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME))
+                                val phoneNumber =
+                                    cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
 
-                            model.addContact(title = title, phoneNumber = phoneNumber)
+                                model.addContact(title = title, phoneNumber = phoneNumber)
 
-                            Snackbar.make(requireView(), R.string.contacts_snackbar_added, Snackbar.LENGTH_LONG).show()
+                                Snackbar.make(
+                                    requireView(),
+                                    R.string.contacts_snackbar_added,
+                                    Snackbar.LENGTH_LONG
+                                ).show()
+                            }
                         }
                     }
+                } catch (ex: Exception) {
+                    if (BuildConfig.DEBUG) {
+                        Log.d(LOG_TAG, "could not add contact", ex)
+                    }
+
+                    Toast.makeText(requireContext(), R.string.error_general, Toast.LENGTH_SHORT).show()
                 }
             }
         }
