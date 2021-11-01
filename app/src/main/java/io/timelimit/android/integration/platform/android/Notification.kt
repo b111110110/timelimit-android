@@ -184,6 +184,12 @@ object PendingIntentIds {
         PendingIntent.FLAG_UPDATE_CURRENT
     }
 
+    val PENDING_INTENT_FLAG_CANCEL_CURRENT = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    } else {
+        PendingIntent.FLAG_CANCEL_CURRENT
+    }
+
     val PENDING_INTENT_FLAGS_ALLOW_MUTATION = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
     } else {

@@ -81,7 +81,7 @@ object NotificationAreaSync {
                 context,
                 pendingIntentId + 1,
                 BackgroundActionService.prepareDismissNotification(context, notification.type, notification.id),
-                PendingIntent.FLAG_CANCEL_CURRENT
+                PendingIntentIds.PENDING_INTENT_FLAG_CANCEL_CURRENT
         )
         val openAppIntent = BackgroundActionService.getOpenAppIntent(context)
 
