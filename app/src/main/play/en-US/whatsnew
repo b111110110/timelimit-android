@@ -1,4 +1,3 @@
+- explain the usage of the system permissions before requesting them
+- fix crashes at Android 12
 - updated dependencies
-- changes when using the device owner
-  - unlocked the OS backup service
-  - configurable organization name

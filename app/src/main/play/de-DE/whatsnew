@@ -1,4 +1,3 @@
+- Erklärung der Verwendung der Systemberechtigungen, bevor diese angefragt werden
+- Abstürze unter Android 12 behoben
 - Abhängigkeiten aktualisiert
-- Änderungen bei aktivem Geräte-Besitzer
-  - Backup-Service-Funktion vom System freigeschaltet
-  - einstellbarer Organisationsname
