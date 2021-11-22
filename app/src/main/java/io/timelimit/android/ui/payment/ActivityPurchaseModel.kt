@@ -149,6 +149,8 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
     private suspend fun queryAndProcessPurchases() {
         processMutex.withLock {
             isWorkingInternal.setTemporarily(true).use {
+                hadErrorInternal.value = false
+
                 try {
                     initAndUseClient { client ->
                         val result = client.queryPurchasesAsync(BillingClient.SkuType.INAPP)
@@ -180,6 +182,8 @@ class ActivityPurchaseModel(application: Application): AndroidViewModel(applicat
                 processMutex.withLock {
                     isWorkingInternal.setTemporarily(true).use {
                         initAndUseClient { client ->
+                            hadErrorInternal.value = false
+
                             try {
                                 p0.assertSuccess()
 
