@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@ package io.timelimit.android.ui.setup.device
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
+import io.timelimit.android.async.Threads
+import io.timelimit.android.coroutines.executeAndWait
 import io.timelimit.android.coroutines.runAsync
 import io.timelimit.android.data.IdGenerator
 import io.timelimit.android.data.model.AppRecommendation
@@ -128,12 +130,19 @@ class SetupDeviceModel(application: Application): AndroidViewModel(application) 
                     ))
                 }
 
+                val alreadyAssignedApps = Threads.database.executeAndWait {
+                    logic.database.categoryApp().getCategoryAppsByUserIdSync(realUserId)
+                        .map { it.packageName }
+                        .toSet()
+                }
+
                 // add allowed apps
                 val allowedAppsPackages = logic.platformIntegration.getLocalApps(IdGenerator.generateId())
                         .filter { app -> app.recommendation == AppRecommendation.Whitelist }
                         .map { app -> app.packageName }
                         .toMutableSet().apply {
                             removeAll(appsToNotWhitelist)
+                            removeAll(alreadyAssignedApps)
                         }.toList()
 
                 if (allowedAppsPackages.isNotEmpty()) {
