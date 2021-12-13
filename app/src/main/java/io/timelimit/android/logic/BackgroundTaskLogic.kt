@@ -384,11 +384,13 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         val category = handling.createdWithCategoryRelatedData.category
                         val categoryId = category.id
                         val timeToSubtractForCategory = timeToSubtractForCategory(categoryId)
+                        val isRecentlyStartedCategory = recentlyStartedCategories.contains(categoryId)
                         val nowRemaining = handling.remainingTime ?: return@forEach // category is not limited anymore
 
                         val oldRemainingTime = nowRemaining.includingExtraTime - timeToSubtractForCategory
                         val newRemainingTime = oldRemainingTime - timeToSubtract
 
+                        val commitedSessionDuration = handling.remainingSessionDuration
                         val oldSessionDuration = handling.remainingSessionDuration?.let { it - timeToSubtractForCategory }
 
                         // trigger time warnings
@@ -451,7 +453,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         if (oldSessionDuration != null) {
                             val newSessionDuration = oldSessionDuration - timeToSubtract
 
-                            if (oldSessionDuration > 0 && newSessionDuration <= 0) {
+                            if (oldSessionDuration > 0 && newSessionDuration <= 0 && !isRecentlyStartedCategory) {
                                 triggerSyncByTimeOver = true
                             }
                         }
@@ -459,16 +461,15 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         // check if limit login triggered
                         val triggerSyncByLimitLoginCategoryForThisCategory = userRelatedData.preBlockSwitchPoints.let { switchPoints ->
                             if (switchPoints.isEmpty()) false else {
-
-                                val limitLoginBySessionDuration = if (oldSessionDuration != null) {
+                                val limitLoginBySessionDuration = if (commitedSessionDuration != null && oldSessionDuration != null) {
                                     val newSessionDuration = oldSessionDuration - timeToSubtract
 
-                                    switchPoints.find { switchPoint -> oldSessionDuration >= switchPoint && newSessionDuration < switchPoint } != null
+                                    switchPoints.find { switchPoint -> switchPoint in newSessionDuration until commitedSessionDuration } != null
                                 } else false
 
                                 val limitLoginByRemainingTime = switchPoints.find { switchPoint -> oldRemainingTime >= switchPoint && newRemainingTime < switchPoint } != null
 
-                                limitLoginBySessionDuration || limitLoginByRemainingTime
+                                (limitLoginBySessionDuration && !isRecentlyStartedCategory) || limitLoginByRemainingTime
                             }
                         }
 
@@ -524,7 +525,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         appLogic.platformIntegration.showOverlayMessage("sync forced")
                     }
 
-                    commitUsedTimeUpdaters()
+                    usedTimeUpdateHelper.doCommit()
 
                     ApplyActionUtil.applyAppLogicAction(
                             action = ForceSyncAction,

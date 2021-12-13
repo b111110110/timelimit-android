@@ -95,7 +95,7 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
                 Log.d(LOG_TAG, "makeCommitByDifferntHandling = $makeCommitByDifferntHandling; makeCommitByDifferentBaseData = $makeCommitByDifferentBaseData; makeCommitByCountedTime = $makeCommitByCountedTime")
             }
 
-            doCommitPrivate()
+            doCommit()
         } else {
             false
         }
@@ -109,14 +109,14 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
     }
 
     suspend fun flush() {
-        doCommitPrivate()
+        doCommit()
 
         lastCategoryHandlings = emptyList()
         categoryIds = emptySet()
     }
 
-    private suspend fun doCommitPrivate(): Boolean {
-        val makeCommit = lastCategoryHandlings.isNotEmpty() && countedTime > 0
+    suspend fun doCommit(): Boolean {
+        val makeCommit = lastCategoryHandlings.isNotEmpty()
 
         if (makeCommit) {
             val categoriesWithSessionDurationLimits = lastCategoryHandlings
@@ -127,10 +127,14 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
             val categoriesWithSessionDurationLimitsWhichWereRecentlyStarted = categoriesWithSessionDurationLimits.intersect(recentlyStartedCategories)
 
             if (categoriesWithSessionDurationLimitsWhichWereRecentlyStarted.isEmpty()) {
-                commitSendAction(
-                    items = lastCategoryHandlings,
-                    sendTimestamp = categoriesWithSessionDurationLimits.isNotEmpty()
-                )
+                val sendTimestamp = categoriesWithSessionDurationLimits.isNotEmpty()
+
+                if (countedTime > 0 || sendTimestamp) {
+                    commitSendAction(
+                        items = lastCategoryHandlings,
+                        sendTimestamp = sendTimestamp
+                    )
+                }
             } else {
                 if (BuildConfig.DEBUG) {
                     Log.d(LOG_TAG, "skip updating the session duration last usage timestamps")
@@ -138,10 +142,12 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
 
                 if (categoriesWithSessionDurationLimits == categoriesWithSessionDurationLimitsWhichWereRecentlyStarted) {
                     // no category needs the timestamp
-                    commitSendAction(
-                        items = lastCategoryHandlings,
-                        sendTimestamp = false
-                    )
+                    if (countedTime > 0) {
+                        commitSendAction(
+                            items = lastCategoryHandlings,
+                            sendTimestamp = false
+                        )
+                    }
                 } else {
                     if (BuildConfig.DEBUG) {
                         Log.d(LOG_TAG, "... but only for some categories")
@@ -155,7 +161,10 @@ class UsedTimeUpdateHelper (private val appLogic: AppLogic) {
                         categoriesWithSessionDurationLimitsWhichWereRecentlyStarted.contains(it.createdWithCategoryRelatedData.category.id)
                     }
 
-                    commitSendAction(items = items1, sendTimestamp = false)
+                    if (countedTime > 0) {
+                        commitSendAction(items = items1, sendTimestamp = false)
+                    }
+
                     commitSendAction(items = items2, sendTimestamp = true)
                 }
             }
