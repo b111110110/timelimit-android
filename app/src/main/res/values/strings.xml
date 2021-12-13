@@ -334,7 +334,7 @@
     <string name="category_notification_filter_delay_switch">Delay blocking</string>
     <string name="category_notification_filter_delay_prefix">Delay blocking by</string>
     <string name="category_notification_filter_delay_suffix">seconds</string>
-    <string name="category_notification_filter_save_toast">Your changed were saved</string>
+    <string name="category_notification_filter_save_toast">Your changes were saved</string>
     <string name="category_notification_filter_summary_disabled">Notifications are not blocked</string>
     <string name="category_notification_filter_summary_has_permission">Notifications are blocked when the category is blocked</string>
     <string name="category_notification_filter_summary_enabled_no_delay">Notifications are always blocked</string>
