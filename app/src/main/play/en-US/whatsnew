@@ -1,3 +1,4 @@
-- explain the usage of the system permissions before requesting them
-- fix crashes at Android 12
+- add option to delay notification blocking
+- fix wrong category assignments when adding new devices
+- fix wrong sync triggering caused by limit login categories
 - updated dependencies

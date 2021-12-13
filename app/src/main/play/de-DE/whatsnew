@@ -1,3 +1,4 @@
-- Erklärung der Verwendung der Systemberechtigungen, bevor diese angefragt werden
-- Abstürze unter Android 12 behoben
+- neue Option, um die Blockierung von Benachrichtigungen zu verzögern
+- falsche Kategoriezuordnung beim Hinzufügen von Geräten behoben
+- falsches Auslösen der Synchronisation bei Anmeldeverhinderungskategorien behoben
 - Abhängigkeiten aktualisiert
