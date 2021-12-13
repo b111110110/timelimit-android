@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@ package io.timelimit.android.livedata
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import io.timelimit.android.util.Option
 
 fun <T1, T2> mergeLiveData(d1: LiveData<T1>, d2: LiveData<T2>): LiveData<Pair<T1?, T2?>> {
     val result = MediatorLiveData<Pair<T1?, T2?>>()
@@ -138,3 +139,102 @@ fun <T1, T2, T3, T4, T5, T6> mergeLiveData(d1: LiveData<T1>, d2: LiveData<T2>, d
 }
 
 data class SixTuple<A, B, C, D, E, F>(val first: A, val second: B, val third: C, val forth: D, val fifth: E, val sixth: F)
+
+fun <T1, T2> mergeLiveDataWaitForValues(d1: LiveData<T1>, d2: LiveData<T2>): LiveData<Pair<T1, T2>> {
+    val result = MediatorLiveData<Pair<T1, T2>>()
+    var state = Pair<Option<T1>, Option<T2>>(Option.None(), Option.None())
+
+    fun update() {
+        val (a, b) = state
+
+        if (a is Option.Some && b is Option.Some) {
+            result.value = Pair(a.value, b.value)
+        }
+    }
+
+    result.addSource(d1) {
+        state = state.copy(first = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d2) {
+        state = state.copy(second = Option.Some(it))
+
+        update()
+    }
+
+    return result
+}
+
+fun <T1, T2, T3> mergeLiveDataWaitForValues(d1: LiveData<T1>, d2: LiveData<T2>, d3: LiveData<T3>): LiveData<Triple<T1, T2, T3>> {
+    val result = MediatorLiveData<Triple<T1, T2, T3>>()
+    var state = Triple<Option<T1>, Option<T2>, Option<T3>>(Option.None(), Option.None(), Option.None())
+
+    fun update() {
+        val (a, b, c) = state
+
+        if (a is Option.Some && b is Option.Some && c is Option.Some) {
+            result.value = Triple(a.value, b.value, c.value)
+        }
+    }
+
+    result.addSource(d1) {
+        state = state.copy(first = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d2) {
+        state = state.copy(second = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d3) {
+        state = state.copy(third = Option.Some(it))
+
+        update()
+    }
+
+    return result
+}
+
+fun <T1, T2, T3, T4> mergeLiveDataWaitForValues(d1: LiveData<T1>, d2: LiveData<T2>, d3: LiveData<T3>, d4: LiveData<T4>): LiveData<FourTuple<T1, T2, T3, T4>> {
+    val result = MediatorLiveData<FourTuple<T1, T2, T3, T4>>()
+    var state = FourTuple<Option<T1>, Option<T2>, Option<T3>, Option<T4>>(Option.None(), Option.None(), Option.None(), Option.None())
+
+    fun update() {
+        val (a, b, c, d) = state
+
+        if (a is Option.Some && b is Option.Some && c is Option.Some && d is Option.Some) {
+            result.value = FourTuple(a.value, b.value, c.value, d.value)
+        }
+    }
+
+    result.addSource(d1) {
+        state = state.copy(first = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d2) {
+        state = state.copy(second = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d3) {
+        state = state.copy(third = Option.Some(it))
+
+        update()
+    }
+
+    result.addSource(d4) {
+        state = state.copy(forth = Option.Some(it))
+
+        update()
+    }
+
+    return result
+}

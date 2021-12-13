@@ -41,6 +41,7 @@ import io.timelimit.android.integration.platform.android.AccessibilityService
 import io.timelimit.android.livedata.*
 import io.timelimit.android.logic.blockingreason.AppBaseHandling
 import io.timelimit.android.logic.blockingreason.CategoryHandlingCache
+import io.timelimit.android.logic.blockingreason.CategoryItselfHandling
 import io.timelimit.android.logic.blockingreason.needsNetworkId
 import io.timelimit.android.sync.actions.ForceSyncAction
 import io.timelimit.android.sync.actions.UpdateDeviceStatusAction
@@ -357,7 +358,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
                         (backgroundAppBaseHandling is AppBaseHandling.UseCategories && backgroundAppBaseHandling.categoryIds.find {
                             val handling = categoryHandlingCache.get(it)
                             val hasPremium = deviceRelatedData.isLocalMode || deviceRelatedData.isConnectedAndHasPremium
-                            val blockAllNotifications = handling.blockAllNotifications && hasPremium
+                            val blockAllNotifications = handling.blockAllNotifications is CategoryItselfHandling.BlockAllNotifications.Yes && hasPremium
 
                             handling.shouldBlockActivities || blockAllNotifications
                         } != null)

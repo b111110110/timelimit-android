@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,69 +18,71 @@ package io.timelimit.android.ui.manage.category.settings
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import io.timelimit.android.R
 import io.timelimit.android.data.model.Category
+import io.timelimit.android.data.model.Device
 import io.timelimit.android.databinding.CategoryNotificationFilterBinding
+import io.timelimit.android.integration.platform.NewPermissionStatus
 import io.timelimit.android.livedata.mergeLiveData
-import io.timelimit.android.sync.actions.UpdateCategoryBlockAllNotificationsAction
+import io.timelimit.android.livedata.mergeLiveDataWaitForValues
 import io.timelimit.android.ui.help.HelpDialogFragment
 import io.timelimit.android.ui.main.ActivityViewModel
-import io.timelimit.android.ui.payment.RequiresPurchaseDialogFragment
+import io.timelimit.android.util.TimeTextUtil
 
 object CategoryNotificationFilter {
     fun bind(
-            view: CategoryNotificationFilterBinding,
-            auth: ActivityViewModel,
-            categoryLive: LiveData<Category?>,
-            lifecycleOwner: LifecycleOwner,
-            fragmentManager: FragmentManager,
-            childId: String
+        view: CategoryNotificationFilterBinding,
+        auth: ActivityViewModel,
+        categoryLive: LiveData<Category?>,
+        lifecycleOwner: LifecycleOwner,
+        fragmentManager: FragmentManager,
+        childId: String,
+        permissionStatus: LiveData<ManageNotificationFilterModel.PermissionStatus>
     ) {
+        val context = view.root.context
+
         view.titleView.setOnClickListener {
             HelpDialogFragment.newInstance(
-                    title = R.string.category_notification_filter_title,
-                    text = R.string.category_notification_filter_text
+                title = R.string.category_notification_filter_title,
+                text = R.string.category_notification_filter_text
             ).show(fragmentManager)
         }
 
-        val premium = auth.logic.fullVersion.shouldProvideFullVersionFunctions
+        view.button.setOnClickListener {
+            val category = categoryLive.value
 
-        mergeLiveData(categoryLive, premium).observe(lifecycleOwner, Observer { (category, hasPremium) ->
-            val shouldBeChecked = category?.blockAllNotifications ?: false
-
-            view.checkbox.setOnCheckedChangeListener { _, _ ->  }
-            view.checkbox.isChecked = shouldBeChecked
-            view.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked != shouldBeChecked) {
-                    if (isChecked) {
-                        if (hasPremium != true) {
-                            RequiresPurchaseDialogFragment().show(fragmentManager)
-                        } else if (auth.requestAuthenticationOrReturnTrueAllowChild(childId) && category != null) {
-                            EnableNotificationFilterDialogFragment.newInstance(
-                                    childId = childId,
-                                    categoryId = category.id
-                            ).show(fragmentManager)
-                        }
-
-                        view.checkbox.isChecked = false
-                    } else /* not isChecked */ {
-                        if (
-                                category != null &&
-                                auth.tryDispatchParentAction(
-                                        UpdateCategoryBlockAllNotificationsAction(
-                                                categoryId = category.id,
-                                                blocked = isChecked
-                                        )
-                                )
-                        ) {
-                            // ok
-                        } else {
-                            view.checkbox.isChecked = true
-                        }
-                    }
-                }
+            if (auth.requestAuthenticationOrReturnTrueAllowChild(childId) && category != null) {
+                ManageNotificationFilterDialogFragment.newInstance(
+                    childId = childId,
+                    categoryId = category.id
+                ).show(fragmentManager)
             }
-        })
+        }
+
+        mergeLiveDataWaitForValues(categoryLive, permissionStatus).observe(lifecycleOwner) { (category, permissionStatus) ->
+            val hasPermission = when (permissionStatus) {
+                ManageNotificationFilterModel.PermissionStatus.SometimesGranted -> true
+                ManageNotificationFilterModel.PermissionStatus.AlwaysGranted -> true
+                ManageNotificationFilterModel.PermissionStatus.NoDevices -> false
+                ManageNotificationFilterModel.PermissionStatus.NeverGranted -> false
+            }
+            val shouldBeChecked = category?.blockAllNotifications ?: false
+            val blockDelay = category?.blockNotificationDelay ?: 0
+
+            view.status = if (shouldBeChecked) {
+                if (blockDelay == 0L) {
+                    context.getString(R.string.category_notification_filter_summary_enabled_no_delay)
+                } else {
+                    context.getString(
+                        R.string.category_notification_filter_summary_enabled_with_delay,
+                        TimeTextUtil.seconds((blockDelay / 1000L).toInt(), context)
+                    )
+                }
+            } else if (hasPermission) {
+                context.getString(R.string.category_notification_filter_summary_has_permission)
+            } else {
+                context.getString(R.string.category_notification_filter_summary_disabled)
+            }
+        }
     }
 }

@@ -47,7 +47,7 @@ data class CategoryItselfHandling (
         val okBySessionDurationLimits: Boolean,
         val okByCurrentDevice: Boolean,
         val missingNetworkTime: Boolean,
-        val blockAllNotifications: Boolean,
+        val blockAllNotifications: BlockAllNotifications,
         val remainingTime: RemainingTime?,
         val remainingSessionDuration: Long?,
         val dependsOnMinTime: Long,
@@ -248,7 +248,10 @@ data class CategoryItselfHandling (
             else
                 emptySet()
 
-            val blockAllNotifications = categoryRelatedData.category.blockAllNotifications && hasPremiumOrLocalMode
+            val blockAllNotifications = when (categoryRelatedData.category.blockAllNotifications && hasPremiumOrLocalMode) {
+                true -> BlockAllNotifications.Yes(categoryRelatedData.category.blockNotificationDelay)
+                false -> BlockAllNotifications.No
+            }
 
             return CategoryItselfHandling(
                     shouldCountTime = shouldCountTime,
@@ -377,5 +380,18 @@ data class CategoryItselfHandling (
         }
 
         return true
+    }
+
+    sealed class BlockAllNotifications: Comparable<BlockAllNotifications> {
+        object No: BlockAllNotifications()
+        data class Yes(val delay: Long): BlockAllNotifications()
+
+        override fun compareTo(other: BlockAllNotifications): Int {
+            return if (this is Yes) {
+                if (other is Yes) -this.delay.compareTo(other.delay) else 1
+            } else {
+                if (other is Yes) -1 else 0
+            }
+        }
     }
 }

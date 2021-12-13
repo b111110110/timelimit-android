@@ -22,6 +22,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.snackbar.Snackbar
 import io.timelimit.android.R
@@ -58,6 +59,7 @@ class CategorySettingsFragment : Fragment() {
     private val auth: ActivityViewModel by lazy { getActivityViewModel(requireActivity()) }
     private val childId: String get() = requireArguments().getString(CHILD_ID)!!
     private val categoryId: String get() = requireArguments().getString(CATEGORY_ID)!!
+    private val notificationFilterModel: ManageNotificationFilterModel by viewModels()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val binding = FragmentCategorySettingsBinding.inflate(inflater, container, false)
@@ -77,6 +79,8 @@ class CategorySettingsFragment : Fragment() {
         val currentExtraTimeBoundToDate = currentExtraTime.map { it != null && it != 0L }.and(
                 categoryEntry.map { it?.extraTimeDay != null && it.extraTimeDay != -1 }
         ).ignoreUnchanged()
+
+        notificationFilterModel.init(categoryId = categoryId, childId = childId)
 
         ManageCategoryForUnassignedApps.bind(
                 binding = binding.categoryForUnassignedApps,
@@ -113,7 +117,8 @@ class CategorySettingsFragment : Fragment() {
                 fragmentManager = parentFragmentManager,
                 auth = auth,
                 categoryLive = categoryEntry,
-                childId = childId
+                childId = childId,
+                permissionStatus = notificationFilterModel.permissionStatus
         )
 
         CategoryTimeWarningView.bind(

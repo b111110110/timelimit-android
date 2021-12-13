@@ -326,6 +326,23 @@
         when the Apps itself are blocked AND when the Apps itself are not blocked.
         This will block (background) music playback, too.
     </string>
+    <string name="category_notification_filter_missing_permission">TimeLimit does not have the notification access permission.</string>
+    <string name="category_notification_filter_delay_intro">It is possible to delay blocking the notifications.
+        This only applies when the category itself is not blocked.
+        If the category itself is blocked, then the delay is ignored.
+    </string>
+    <string name="category_notification_filter_delay_switch">Delay blocking</string>
+    <string name="category_notification_filter_delay_prefix">Delay blocking by</string>
+    <string name="category_notification_filter_delay_suffix">seconds</string>
+    <string name="category_notification_filter_save_toast">Your changed were saved</string>
+    <string name="category_notification_filter_summary_disabled">Notifications are not blocked</string>
+    <string name="category_notification_filter_summary_has_permission">Notifications are blocked when the category is blocked</string>
+    <string name="category_notification_filter_summary_enabled_no_delay">Notifications are always blocked</string>
+    <string name="category_notification_filter_summary_enabled_with_delay">Notifications are always blocked but delayed by %s</string>
+    <string name="category_notification_filter_error_premium">Premium version missing</string>
+    <string name="category_notification_filter_warning_no_child_devices">There is no device for this child</string>
+    <string name="category_notification_filter_warning_permission_never_granted">The notification access was not granted at a device of this child</string>
+    <string name="category_notification_filter_warning_permission_not_always_granted">The notification access was not granted at all devices of this child</string>
 
     <string name="category_settings">Advanced Settings</string>
     <string name="category_settings_rename">Rename category</string>

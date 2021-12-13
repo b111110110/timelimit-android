@@ -283,6 +283,23 @@
         Wenn Sie diese Option aktivieren, dann werden ALLE Benachrichtigungen von Apps dieser Kategorie blockiert,
         auch wenn Apps dieser Kategorie erlaubt sind. Damit werden auch (Hintergrund)musikwiedergaben blockiert.
     </string>
+    <string name="category_notification_filter_missing_permission">TimeLimit fehlt der Benachrichtigunszugriff.</string>
+    <string name="category_notification_filter_delay_intro">Das Sperren von Benachrichtigungen kann verzögert werden.
+        Wenn die Kategorie und nicht nur die Benachrichtigungen blockiert wurden, dann wird die Verzögerung ignoriert
+        und die Benachrichtigungen werden sofort blockiert.
+    </string>
+    <string name="category_notification_filter_delay_switch">Blockierung verzögern</string>
+    <string name="category_notification_filter_delay_prefix">Verzögere Sperrung um</string>
+    <string name="category_notification_filter_delay_suffix">Sekunden</string>
+    <string name="category_notification_filter_save_toast">Die Änderungen wurden gespeichert</string>
+    <string name="category_notification_filter_summary_disabled">Benachrichtigungen werden nicht blockiert</string>
+    <string name="category_notification_filter_summary_has_permission">Benachrichtigungen werden blockiert wenn die Kategorie blockiert wird</string>
+    <string name="category_notification_filter_summary_enabled_no_delay">Benachrichtigungen werden immer blockiert</string>
+    <string name="category_notification_filter_summary_enabled_with_delay">Benachrichtigungen werden mit %s Verzägerung immer blockiert</string>
+    <string name="category_notification_filter_error_premium">Die Vollversion fehlt</string>
+    <string name="category_notification_filter_warning_no_child_devices">Diesem Kind wurden keine Geräte zugeordnet</string>
+    <string name="category_notification_filter_warning_permission_never_granted">Bei keinem Gerät dieses Kindes wurde der Benachrichtigungszugriff aktiviert</string>
+    <string name="category_notification_filter_warning_permission_not_always_granted">Der Benachrichtigungszugriff wurde nicht bei allen Geräten dieses Kindes aktiviert</string>
 
     <string name="category_settings">erweiterte Einstellungen</string>
     <string name="category_settings_rename">Kategorie umbenennen</string>

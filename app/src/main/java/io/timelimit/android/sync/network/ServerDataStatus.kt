@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -453,7 +453,8 @@ data class ServerUpdatedCategoryBaseData(
         val sort: Int,
         val networks: List<ServerCategoryNetworkId>,
         val disableLimitsUntil: Long,
-        val flags: Long
+        val flags: Long,
+        val blockNotificationDelay: Long
 ) {
     companion object {
         private const val CATEGORY_ID = "categoryId"
@@ -474,6 +475,7 @@ data class ServerUpdatedCategoryBaseData(
         private const val NETWORKS = "networks"
         private const val DISABLE_LIMITS_UNTIL = "dlu"
         private const val FLAGS = "flags"
+        private const val BLOCK_NOTIFICATION_DELAY = "blockNotificationDelay"
 
         fun parse(reader: JsonReader): ServerUpdatedCategoryBaseData {
             var categoryId: String? = null
@@ -495,6 +497,7 @@ data class ServerUpdatedCategoryBaseData(
             var networks: List<ServerCategoryNetworkId> = emptyList()
             var disableLimitsUntil = 0L
             var flags = 0L
+            var blockNotificationDelay = 0L
 
             reader.beginObject()
             while (reader.hasNext()) {
@@ -517,6 +520,7 @@ data class ServerUpdatedCategoryBaseData(
                     NETWORKS -> networks = ServerCategoryNetworkId.parseList(reader)
                     DISABLE_LIMITS_UNTIL -> disableLimitsUntil = reader.nextLong()
                     FLAGS -> flags = reader.nextLong()
+                    BLOCK_NOTIFICATION_DELAY -> blockNotificationDelay = reader.nextLong()
                     else -> reader.skipValue()
                 }
             }
@@ -540,7 +544,8 @@ data class ServerUpdatedCategoryBaseData(
                     sort = sort,
                     networks = networks,
                     disableLimitsUntil = disableLimitsUntil,
-                    flags = flags
+                    flags = flags,
+                    blockNotificationDelay = blockNotificationDelay
             )
         }
 

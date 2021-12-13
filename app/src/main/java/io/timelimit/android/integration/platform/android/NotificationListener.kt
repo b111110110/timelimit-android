@@ -28,11 +28,13 @@ import io.timelimit.android.R
 import io.timelimit.android.async.Threads
 import io.timelimit.android.coroutines.executeAndWait
 import io.timelimit.android.coroutines.runAsync
+import io.timelimit.android.data.model.Category
 import io.timelimit.android.data.model.UserType
 import io.timelimit.android.livedata.waitForNonNullValue
 import io.timelimit.android.logic.*
 import io.timelimit.android.logic.blockingreason.AppBaseHandling
 import io.timelimit.android.logic.blockingreason.CategoryItselfHandling
+import kotlinx.coroutines.delay
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class NotificationListener: NotificationListenerService() {
@@ -60,13 +62,9 @@ class NotificationListener: NotificationListenerService() {
         }
 
         runAsync {
-            val reason = shouldRemoveNotification(sbn)
+            val result = shouldRemoveNotification(sbn)
 
-            if (reason == BlockingReason.None) {
-                if (sbn.isOngoing) {
-                    lastOngoingNotificationHidden.remove(sbn.packageName)
-                }
-            } else {
+            if (result is ShouldBlockNotificationResult.Yes) {
                 val success = try {
                     if (sbn.isOngoing && SUPPORTS_HIDING_ONGOING_NOTIFICATIONS) {
                         // only snooze for 5 seconds to show it again soon
@@ -77,6 +75,10 @@ class NotificationListener: NotificationListenerService() {
                             return@runAsync
                         }
                     } else {
+                        if (result.delay > 0) {
+                            delay(result.delay.coerceAtMost(Category.MAX_NOTIFICATION_BLOCK_DELAY))
+                        }
+
                         cancelNotification(sbn.key)
                     }
 
@@ -103,7 +105,7 @@ class NotificationListener: NotificationListenerService() {
                                 .setContentText(
                                         queryAppTitleCache.query(sbn.packageName) +
                                                 " - " +
-                                                when (reason) {
+                                                when (result.reason) {
                                                     BlockingReason.NotPartOfAnCategory -> getString(R.string.lock_reason_short_no_category)
                                                     BlockingReason.TemporarilyBlocked -> getString(R.string.lock_reason_short_temporarily_blocked)
                                                     BlockingReason.TimeOver -> getString(R.string.lock_reason_short_time_over)
@@ -124,6 +126,10 @@ class NotificationListener: NotificationListenerService() {
                                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                                 .build()
                 )
+            } else {
+                if (sbn.isOngoing) {
+                    lastOngoingNotificationHidden.remove(sbn.packageName)
+                }
             }
         }
     }
@@ -134,13 +140,13 @@ class NotificationListener: NotificationListenerService() {
         // not interesting but required for old android versions
     }
 
-    private suspend fun shouldRemoveNotification(sbn: StatusBarNotification): BlockingReason {
+    private suspend fun shouldRemoveNotification(sbn: StatusBarNotification): ShouldBlockNotificationResult {
         if (sbn.packageName == packageName) {
-            return BlockingReason.None
+            return ShouldBlockNotificationResult.No
         }
 
         if (sbn.isOngoing && (!SUPPORTS_HIDING_ONGOING_NOTIFICATIONS)) {
-            return BlockingReason.None
+            return ShouldBlockNotificationResult.No
         }
 
         val deviceAndUserRelatedData = Threads.database.executeAndWait {
@@ -148,7 +154,7 @@ class NotificationListener: NotificationListenerService() {
         }
 
         return if (deviceAndUserRelatedData?.userRelatedData?.user?.type != UserType.Child) {
-            BlockingReason.None
+            ShouldBlockNotificationResult.No
         } else {
             val isSystemImageApp = appLogic.platformIntegration.isSystemImageApp(sbn.packageName)
 
@@ -163,7 +169,10 @@ class NotificationListener: NotificationListenerService() {
             )
 
             if (appHandling is AppBaseHandling.BlockDueToNoCategory && !isSystemImageApp) {
-                BlockingReason.NotPartOfAnCategory
+                ShouldBlockNotificationResult.Yes(
+                    reason = BlockingReason.NotPartOfAnCategory,
+                    delay = 0
+                )
             } else if (appHandling is AppBaseHandling.UseCategories) {
                 val time = RealTime.newInstance()
                 val battery = appLogic.platformIntegration.getBatteryStatus()
@@ -190,15 +199,32 @@ class NotificationListener: NotificationListenerService() {
                     )
                 }
 
-                if (categoryHandlings.find { it.blockAllNotifications } != null) {
-                    BlockingReason.NotificationsAreBlocked
-                } else {
-                    categoryHandlings.find { it.shouldBlockActivities }?.activityBlockingReason
-                            ?: BlockingReason.None
+                categoryHandlings.find { it.shouldBlockActivities }?.let { handling ->
+                    return ShouldBlockNotificationResult.Yes(
+                        reason = handling.activityBlockingReason,
+                        delay = 0
+                    )
                 }
+
+                (categoryHandlings.map { it.blockAllNotifications }.maxOrNull() ?: CategoryItselfHandling.BlockAllNotifications.No)
+                    .let { blockAllNotifications ->
+                        if (blockAllNotifications is CategoryItselfHandling.BlockAllNotifications.Yes) {
+                            ShouldBlockNotificationResult.Yes(
+                                reason = BlockingReason.NotificationsAreBlocked,
+                                delay = blockAllNotifications.delay
+                            )
+                        } else {
+                            ShouldBlockNotificationResult.No
+                        }
+                    }
             } else {
-                BlockingReason.None
+                ShouldBlockNotificationResult.No
             }
         }
+    }
+
+    private sealed class ShouldBlockNotificationResult {
+        object No: ShouldBlockNotificationResult()
+        data class Yes(val reason: BlockingReason, val delay: Long): ShouldBlockNotificationResult()
     }
 }

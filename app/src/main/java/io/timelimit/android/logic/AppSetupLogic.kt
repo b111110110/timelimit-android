@@ -187,7 +187,8 @@ class AppSetupLogic(private val appLogic: AppLogic) {
                             minBatteryLevelMobile = 0,
                             sort = 0,
                             disableLimitsUntil = 0,
-                            flags = 0
+                            flags = 0,
+                            blockNotificationDelay = 0
                     ))
 
                     appLogic.database.category().addCategory(Category(
@@ -211,7 +212,8 @@ class AppSetupLogic(private val appLogic: AppLogic) {
                             minBatteryLevelMobile = 0,
                             sort = 1,
                             disableLimitsUntil = 0,
-                            flags = 0
+                            flags = 0,
+                            blockNotificationDelay = 0
                     ))
 
                     // add default allowed apps

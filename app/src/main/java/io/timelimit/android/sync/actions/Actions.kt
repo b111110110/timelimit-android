@@ -1428,15 +1428,20 @@ data class UpdateCategoryBlockedTimesAction(val categoryId: String, val blockedT
     }
 }
 
-data class UpdateCategoryBlockAllNotificationsAction(val categoryId: String, val blocked: Boolean): ParentAction() {
+data class UpdateCategoryBlockAllNotificationsAction(val categoryId: String, val blocked: Boolean, val blockDelay: Long?): ParentAction() {
     companion object {
         private const val TYPE_VALUE = "UPDATE_CATEGORY_BLOCK_ALL_NOTIFICATIONS"
         private const val CATEGORY_ID = "categoryId"
         private const val BLOCK = "blocked"
+        private const val BLOCK_DELAY = "blockDelay"
     }
 
     init {
         IdGenerator.assertIdValid(categoryId)
+
+        if (blockDelay != null && blockDelay < 0) {
+            throw IllegalArgumentException("blockDelay must be >= 0")
+        }
     }
 
     override fun serialize(writer: JsonWriter) {
@@ -1445,6 +1450,10 @@ data class UpdateCategoryBlockAllNotificationsAction(val categoryId: String, val
         writer.name(TYPE).value(TYPE_VALUE)
         writer.name(CATEGORY_ID).value(categoryId)
         writer.name(BLOCK).value(blocked)
+
+        if (blockDelay != null) {
+            writer.name(BLOCK_DELAY).value(blockDelay)
+        }
 
         writer.endObject()
     }
