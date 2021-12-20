@@ -106,7 +106,7 @@ class SetupDevicePermissionsFragment : Fragment() {
         binding.notificationAccessPermission = platform.getNotificationAccessPermissionStatus()
         binding.protectionLevel = platform.getCurrentProtectionLevel()
         binding.usageStatsAccess = platform.getForegroundAppPermissionStatus()
-        binding.overlayPermission = platform.getOverlayPermissionStatus()
+        binding.overlayPermission = platform.getDrawOverOtherAppsPermissionStatus()
         binding.accessibilityServiceEnabled = platform.isAccessibilityServiceEnabled()
     }
 

@@ -173,17 +173,7 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
         Toast.makeText(context, text, Toast.LENGTH_SHORT).show()
     }
 
-    override fun getDrawOverOtherAppsPermissionStatus(): RuntimePermissionStatus {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.canDrawOverlays(context)) {
-                return RuntimePermissionStatus.Granted
-            } else {
-                return RuntimePermissionStatus.NotGranted
-            }
-        } else {
-            return RuntimePermissionStatus.NotRequired
-        }
-    }
+    override fun getDrawOverOtherAppsPermissionStatus(): RuntimePermissionStatus = overlay.getOverlayPermissionStatus()
 
     override fun getNotificationAccessPermissionStatus(): NewPermissionStatus {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -198,8 +188,6 @@ class AndroidIntegration(context: Context): PlatformIntegration(maximumProtectio
             return NewPermissionStatus.NotSupported
         }
     }
-
-    override fun getOverlayPermissionStatus(): RuntimePermissionStatus = overlay.getOverlayPermissionStatus()
 
     override fun isAccessibilityServiceEnabled(): Boolean {
         val service = context.packageName + "/" + AccessibilityService::class.java.canonicalName

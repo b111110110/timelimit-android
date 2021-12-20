@@ -76,10 +76,6 @@ class DummyIntegration(
         return notificationAccess
     }
 
-    override fun getOverlayPermissionStatus(): RuntimePermissionStatus {
-        return RuntimePermissionStatus.NotRequired
-    }
-
     override fun isAccessibilityServiceEnabled(): Boolean {
         return false
     }

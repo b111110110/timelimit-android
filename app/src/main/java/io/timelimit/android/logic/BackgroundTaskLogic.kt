@@ -877,7 +877,7 @@ class BackgroundTaskLogic(val appLogic: AppLogic) {
             val protectionLevel = appLogic.platformIntegration.getCurrentProtectionLevel()
             val usageStatsPermission = appLogic.platformIntegration.getForegroundAppPermissionStatus()
             val notificationAccess = appLogic.platformIntegration.getNotificationAccessPermissionStatus()
-            val overlayPermission = appLogic.platformIntegration.getOverlayPermissionStatus()
+            val overlayPermission = appLogic.platformIntegration.getDrawOverOtherAppsPermissionStatus()
             val accessibilityService = appLogic.platformIntegration.isAccessibilityServiceEnabled()
             val qOrLater = AndroidVersion.qOrLater
 
