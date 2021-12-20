@@ -1471,7 +1471,8 @@
     <string name="setup_username_parent">Parent 1</string>
 
     <string name="sync_status_offline">No Connection</string>
-    <string name="sync_status_online">Connected</string>
+    <string name="sync_status_online_short">Connected</string>
+    <string name="sync_status_online_long">Connected to server</string>
     <string name="sync_status_not_synced">%s - not synced</string>
     <string name="sync_status_unimportant_not_synced">%s - unimportant changes not synced</string>
     <string name="sync_status_conflict_toast">TimeLimit: sync conflict</string>

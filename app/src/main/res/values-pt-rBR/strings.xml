@@ -1273,7 +1273,7 @@ Esta %s só é permitida em algumas redes, mas nenhuma conexão com tal rede foi
     <string name="setup_username_parent">Pai 1</string>
 
     <string name="sync_status_offline">Sem conexão</string>
-    <string name="sync_status_online">Conectado</string>
+    <string name="sync_status_online_short">Conectado</string>
     <string name="sync_status_not_synced">%s - não sincronizado</string>
     <string name="sync_status_unimportant_not_synced">%s - alterações sem importância não sincronizadas</string>
     <string name="sync_status_conflict_toast">TimeLimit: conflito de sincronização</string>

@@ -39,17 +39,18 @@ class SyncStatusModel(application: Application): AndroidViewModel(application) {
         if (connectedMode) {
             isConnected.switchMap { connected ->
                 if (connected) {
-                    val base = application.getString(R.string.sync_status_online)
+                    val baseShort = application.getString(R.string.sync_status_online_short)
+                    val baseLong = application.getString(R.string.sync_status_online_long)
 
                     isNormalSyncPending.switchMap { normalSyncPending ->
                         if (normalSyncPending) {
-                            liveDataFromNullableValue(application.getString(R.string.sync_status_not_synced, base))
+                            liveDataFromNullableValue(application.getString(R.string.sync_status_not_synced, baseShort))
                         } else {
                             isUnimportantSyncPending.map { unimportantSyncPending ->
                                 if (unimportantSyncPending) {
-                                    application.getString(R.string.sync_status_unimportant_not_synced, base)
+                                    application.getString(R.string.sync_status_unimportant_not_synced, baseShort)
                                 } else {
-                                    base
+                                    baseLong
                                 }
                             }
                         }

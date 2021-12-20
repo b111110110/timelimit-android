@@ -1429,7 +1429,8 @@
     <string name="setup_username_parent">Elternteil 1</string>
 
     <string name="sync_status_offline">Keine Verbindung</string>
-    <string name="sync_status_online">Verbunden</string>
+    <string name="sync_status_online_short">Verbunden</string>
+    <string name="sync_status_online_long">mit Server verbunden</string>
     <string name="sync_status_not_synced">%s - nicht synchronisiert</string>
     <string name="sync_status_unimportant_not_synced">%s - unwichtige Änderungen nicht synchronisiert</string>
     <string name="sync_status_conflict_toast">TimeLimit: Synchronisationskonflikt</string>
