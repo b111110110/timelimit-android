@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,14 +15,18 @@
  */
 package io.timelimit.android.integration.platform.android
 
+import android.Manifest
+import android.app.AppOpsManager
 import android.app.Application
 import android.content.Context
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Process
 import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.WindowManager
 import androidx.appcompat.view.ContextThemeWrapper
+import androidx.core.app.AppOpsManagerCompat
 import io.timelimit.android.R
 import io.timelimit.android.async.Threads
 import io.timelimit.android.databinding.BlockingOverlayBinding
@@ -30,6 +34,8 @@ import io.timelimit.android.integration.platform.RuntimePermissionStatus
 
 class OverlayUtil(private var application: Application) {
     private val windowManager = application.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private val appsOpsManager = application.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
+    private val systemOverlayOp = AppOpsManagerCompat.permissionToOp(Manifest.permission.SYSTEM_ALERT_WINDOW)
     private var currentView: BlockingOverlayBinding? = null
 
     fun show() {
@@ -84,10 +90,18 @@ class OverlayUtil(private var application: Application) {
     fun isOverlayShown() = currentView?.root?.isShown ?: false
 
     fun getOverlayPermissionStatus() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
-        if (Settings.canDrawOverlays(application))
+        if (checkAppOp() || Settings.canDrawOverlays(application))
             RuntimePermissionStatus.Granted
         else
             RuntimePermissionStatus.NotGranted
     else
         RuntimePermissionStatus.NotRequired
+
+    private fun checkAppOp(): Boolean {
+        if (systemOverlayOp == null) return false
+
+        val status = appsOpsManager.checkOpNoThrow(systemOverlayOp, Process.myUid(), application.packageName)
+
+        return status == AppOpsManager.MODE_ALLOWED || status == AppOpsManager.MODE_IGNORED
+    }
 }
