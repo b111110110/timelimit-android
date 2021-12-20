@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@ import io.timelimit.android.sync.network.*
 
 interface ServerApi {
     suspend fun getTimeInMillis(): Long
-    suspend fun sendMailLoginCode(mail: String, locale: String): String
+    suspend fun sendMailLoginCode(mail: String, locale: String, deviceAuthToken: String?): String
     suspend fun signInByMailCode(mailLoginToken: String, code: String): String
     suspend fun getStatusByMailToken(mailAuthToken: String): StatusOfMailAddressResponse
     suspend fun createFamilyByMailToken(

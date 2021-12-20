@@ -90,11 +90,14 @@ class AuthenticateByMailModel(application: Application): AndroidViewModel(applic
 
         runAsync {
             try {
-                val api = logic.serverLogic.getServerConfigCoroutine().api
+                val serverConfiguration = logic.serverLogic.getServerConfigCoroutine()
 
-                mailLoginToken = api.sendMailLoginCode(
+                mailLoginToken = serverConfiguration.api.sendMailLoginCode(
                         mail = receiver,
-                        locale = getApplication<Application>().resources.configuration.locale.language
+                        locale = getApplication<Application>().resources.configuration.locale.language,
+                        deviceAuthToken = serverConfiguration.deviceAuthToken.let {
+                            if (it.isEmpty()) null else it
+                        }
                 )
 
                 mailAddressToWhichCodeWasSentInternal.value = receiver

@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@ package io.timelimit.android.sync.network.api
 
 import android.util.JsonReader
 import android.util.JsonWriter
+import android.util.Log
+import io.timelimit.android.BuildConfig
 import io.timelimit.android.async.Threads
 import io.timelimit.android.coroutines.executeAndWait
 import io.timelimit.android.coroutines.waitForResponse
@@ -32,6 +34,8 @@ import java.io.OutputStreamWriter
 class HttpServerApi(private val endpointWithoutSlashAtEnd: String): ServerApi {
     companion object {
         fun createInstance(url: String) = HttpServerApi(url.removeSuffix("/"))
+
+        private const val LOG_TAG = "HttpServerApi"
 
         private const val DEVICE_AUTH_TOKEN = "deviceAuthToken"
         private const val GOOGLE_AUTH_TOKEN = "googleAuthToken"
@@ -103,7 +107,7 @@ class HttpServerApi(private val endpointWithoutSlashAtEnd: String): ServerApi {
         }
     }
 
-    override suspend fun sendMailLoginCode(mail: String, locale: String): String {
+    override suspend fun sendMailLoginCode(mail: String, locale: String, deviceAuthToken: String?): String {
         httpClient.newCall(
                 Request.Builder()
                         .url("$endpointWithoutSlashAtEnd/auth/send-mail-login-code-v2")
@@ -113,12 +117,27 @@ class HttpServerApi(private val endpointWithoutSlashAtEnd: String): ServerApi {
                             writer.beginObject()
                             writer.name(MAIL).value(mail)
                             writer.name(LOCALE).value(locale)
+                            if (deviceAuthToken != null) { writer.name(DEVICE_AUTH_TOKEN).value(deviceAuthToken) }
                             writer.endObject()
                         })
                         .header("Content-Encoding", "gzip")
                         .build()
         ).waitForResponse().use {
-            it.assertSuccess()
+            try {
+                it.assertSuccess()
+            } catch (ex: BadRequestHttpError) {
+                if (deviceAuthToken != null) {
+                    // retry without device auth token
+
+                    if (BuildConfig.DEBUG) {
+                        Log.d(LOG_TAG, "sendMailLoginCode() try again without deviceAuthToken")
+                    }
+
+                    return sendMailLoginCode(mail, locale, null)
+                } else {
+                    throw ex
+                }
+            }
 
             val body = it.body!!
 
