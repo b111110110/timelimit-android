@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,8 @@ enum class ConfigurationItemType {
     ParentModeKey,
     EnableUpdates,
     UpdateStatus,
-    CustomOrganizationName
+    CustomOrganizationName,
+    ServerApiLevel
 }
 
 object ConfigurationItemTypeUtil {
@@ -124,6 +125,7 @@ object ConfigurationItemTypeUtil {
     private const val ENABLE_UPDATES = 21
     private const val UPDATE_STATUS = 22
     private const val CUSTOM_ORGANIZATION_NAME = 23
+    private const val SERVER_API_LEVEL = 24
 
     val TYPES = listOf(
             ConfigurationItemType.OwnDeviceId,
@@ -147,7 +149,8 @@ object ConfigurationItemTypeUtil {
             ConfigurationItemType.ParentModeKey,
             ConfigurationItemType.EnableUpdates,
             ConfigurationItemType.UpdateStatus,
-            ConfigurationItemType.CustomOrganizationName
+            ConfigurationItemType.CustomOrganizationName,
+            ConfigurationItemType.ServerApiLevel
     )
 
     fun serialize(value: ConfigurationItemType) = when(value) {
@@ -173,6 +176,7 @@ object ConfigurationItemTypeUtil {
         ConfigurationItemType.EnableUpdates -> ENABLE_UPDATES
         ConfigurationItemType.UpdateStatus -> UPDATE_STATUS
         ConfigurationItemType.CustomOrganizationName -> CUSTOM_ORGANIZATION_NAME
+        ConfigurationItemType.ServerApiLevel -> SERVER_API_LEVEL
     }
 
     fun parse(value: Int) = when(value) {
@@ -198,6 +202,7 @@ object ConfigurationItemTypeUtil {
         ENABLE_UPDATES -> ConfigurationItemType.EnableUpdates
         UPDATE_STATUS -> ConfigurationItemType.UpdateStatus
         CUSTOM_ORGANIZATION_NAME -> ConfigurationItemType.CustomOrganizationName
+        SERVER_API_LEVEL -> ConfigurationItemType.ServerApiLevel
         else -> throw IllegalArgumentException()
     }
 }

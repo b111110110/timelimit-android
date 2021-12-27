@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@ data class ServerDataStatus(
         val newCategoryTasks: List<ServerUpdatedCategoryTasks>,
         val newUserList: ServerUserList?,
         val fullVersionUntil: Long,
-        val message: String?
+        val message: String?,
+        val apiLevel: Int
 ) {
     companion object {
         private const val NEW_DEVICE_LIST = "devices"
@@ -57,6 +58,7 @@ data class ServerDataStatus(
         private const val NEW_USER_LIST = "users"
         private const val FULL_VERSION_UNTIL = "fullVersion"
         private const val MESSAGE = "message"
+        private const val API_LEVEL = "apiLevel"
 
         fun parse(reader: JsonReader): ServerDataStatus {
             var newDeviceList: ServerDeviceList? = null
@@ -70,6 +72,7 @@ data class ServerDataStatus(
             var newUserList: ServerUserList? = null
             var fullVersionUntil: Long? = null
             var message: String? = null
+            var apiLevel = 0
 
             reader.beginObject()
             while (reader.hasNext()) {
@@ -85,6 +88,7 @@ data class ServerDataStatus(
                     NEW_USER_LIST -> newUserList = ServerUserList.parse(reader)
                     FULL_VERSION_UNTIL -> fullVersionUntil = reader.nextLong()
                     MESSAGE -> message = reader.nextString()
+                    API_LEVEL -> apiLevel = reader.nextInt()
                     else -> reader.skipValue()
                 }
             }
@@ -101,7 +105,8 @@ data class ServerDataStatus(
                     newCategoryTasks = newCategoryTasks,
                     newUserList = newUserList,
                     fullVersionUntil = fullVersionUntil!!,
-                    message = message
+                    message = message,
+                    apiLevel = apiLevel
             )
         }
     }

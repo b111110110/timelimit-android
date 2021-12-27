@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -326,4 +326,8 @@ abstract class ConfigDao {
 
     suspend fun getCustomOrganizationName(): String = getValueOfKeyCoroutine(ConfigurationItemType.CustomOrganizationName) ?: ""
     fun setCustomOrganizationName(value: String) = updateValueSync(ConfigurationItemType.CustomOrganizationName, value)
+
+    fun getServerApiLevelSync() = getValueOfKeySync(ConfigurationItemType.ServerApiLevel).let { it?.toInt() ?: 0 }
+    fun getServerApiLevelLive() = getValueOfKeyAsync(ConfigurationItemType.ServerApiLevel).map { it?.toInt() ?: 0 }
+    fun setServerApiLevelSync(serverApiLevel: Int) { updateValueSync(ConfigurationItemType.ServerApiLevel, serverApiLevel.toString()) }
 }

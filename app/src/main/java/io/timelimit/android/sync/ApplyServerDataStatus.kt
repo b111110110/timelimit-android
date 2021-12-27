@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ object ApplyServerDataStatus {
 
                 database.config().setFullVersionUntilSync(status.fullVersionUntil)
                 database.config().setServerMessage(status.message)
+                database.config().setServerApiLevelSync(status.apiLevel)
             }
 
             run {
