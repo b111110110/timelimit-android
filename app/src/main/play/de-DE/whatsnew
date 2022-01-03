@@ -1,4 +1,4 @@
-- neue Option, um die Blockierung von Benachrichtigungen zu verzögern
-- falsche Kategoriezuordnung beim Hinzufügen von Geräten behoben
-- falsches Auslösen der Synchronisation bei Anmeldeverhinderungskategorien behoben
-- Abhängigkeiten aktualisiert
+- Fehlerbehebungen
+  - Manipulationswarnungen durch die Autofill-Funktion
+  - falsche Aktualisierungen von Sitzungsdauern
+  - fehlende Extrazeit nach der Erledigung von Aufgaben
