@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1024,16 +1024,18 @@ data class DeleteChildTaskAction(val taskId: String): ParentAction() {
     }
 }
 
-data class ReviewChildTaskAction(val taskId: String, val ok: Boolean, val time: Long): ParentAction() {
+data class ReviewChildTaskAction(val taskId: String, val ok: Boolean, val time: Long, val day: Int?): ParentAction() {
     companion object {
         private const val TYPE_VALUE = "REVIEW_CHILD_TASK"
         private const val TASK_ID = "taskId"
         private const val OK = "ok"
         private const val TIME = "time"
+        private const val DAY = "day"
     }
 
     init {
         if (time <= 0) throw IllegalArgumentException()
+        if (day != null && day < 0) throw IllegalArgumentException()
         IdGenerator.assertIdValid(taskId)
     }
 
@@ -1044,6 +1046,10 @@ data class ReviewChildTaskAction(val taskId: String, val ok: Boolean, val time: 
         writer.name(TASK_ID).value(taskId)
         writer.name(OK).value(ok)
         writer.name(TIME).value(time)
+
+        if (day != null) {
+            writer.name(DAY).value(day)
+        }
 
         writer.endObject()
     }

@@ -88,6 +88,7 @@ class AppLogic(
     val backgroundTaskLogic = BackgroundTaskLogic(this)
     val appSetupLogic = AppSetupLogic(this)
     val syncNotificationLogic = SyncNotificationLogic(this)
+    val serverApiLevelLogic = ServerApiLevelLogic(this)
 
     private val isConnectedInternal = MutableLiveData<Boolean>().apply { value = false }
     val isConnected = isConnectedInternal.castDown()

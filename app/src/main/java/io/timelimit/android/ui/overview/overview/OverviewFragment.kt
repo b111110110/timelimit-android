@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,14 +27,17 @@ import io.timelimit.android.async.Threads
 import io.timelimit.android.coroutines.CoroutineFragment
 import io.timelimit.android.data.model.*
 import io.timelimit.android.databinding.FragmentOverviewBinding
+import io.timelimit.android.date.DateInTimezone
 import io.timelimit.android.livedata.waitForNonNullValue
 import io.timelimit.android.logic.AppLogic
 import io.timelimit.android.logic.DefaultAppLogic
+import io.timelimit.android.logic.ServerApiLevelInfo
 import io.timelimit.android.sync.actions.ReviewChildTaskAction
 import io.timelimit.android.ui.main.ActivityViewModel
 import io.timelimit.android.ui.main.getActivityViewModel
 import io.timelimit.android.ui.payment.RequiresPurchaseDialogFragment
 import kotlinx.coroutines.launch
+import java.util.*
 
 class OverviewFragment : CoroutineFragment() {
     private val handlers: OverviewFragmentParentHandlers by lazy { parentFragment as OverviewFragmentParentHandlers }
@@ -97,13 +100,17 @@ class OverviewFragment : CoroutineFragment() {
                 model.showMoreDevices(level)
             }
 
-            override fun onTaskConfirmed(task: ChildTask, hasPremium: Boolean) {
+            override fun onTaskConfirmed(task: ChildTask, hasPremium: Boolean, timezone: TimeZone, serverApiLevel: ServerApiLevelInfo) {
                 if (hasPremium) {
+                    val time = logic.timeApi.getCurrentTimeInMillis()
+                    val day = DateInTimezone.newInstance(time, timezone).dayOfEpoch
+
                     auth.tryDispatchParentAction(
                             ReviewChildTaskAction(
                                     taskId = task.taskId,
                                     ok = true,
-                                    time = logic.timeApi.getCurrentTimeInMillis()
+                                    time = time,
+                                    day = if (serverApiLevel.hasLevelOrIsOffline(2)) day else null
                             )
                     )
                 } else RequiresPurchaseDialogFragment().show(parentFragmentManager)
@@ -114,7 +121,8 @@ class OverviewFragment : CoroutineFragment() {
                         ReviewChildTaskAction(
                                 taskId = task.taskId,
                                 ok = false,
-                                time = logic.timeApi.getCurrentTimeInMillis()
+                                time = logic.timeApi.getCurrentTimeInMillis(),
+                                day = null
                         )
                 )
             }

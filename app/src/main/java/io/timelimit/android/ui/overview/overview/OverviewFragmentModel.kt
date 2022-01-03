@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@ import io.timelimit.android.livedata.liveDataFromFunction
 import io.timelimit.android.livedata.map
 import io.timelimit.android.livedata.switchMap
 import io.timelimit.android.logic.DefaultAppLogic
+import java.util.*
 
 class OverviewFragmentModel(application: Application): AndroidViewModel(application) {
     private val logic = DefaultAppLogic.with(application)
@@ -124,9 +125,18 @@ class OverviewFragmentModel(application: Application): AndroidViewModel(applicat
     }
     private val hasPremiumLive = logic.fullVersion.shouldProvideFullVersionFunctions
     private val pendingTaskItemLive = hasPremiumLive.switchMap { hasPremium ->
-        pendingTasksToShowLive.map { tasks ->
-            tasks.firstOrNull()?.let {
-                TaskReviewOverviewItem(task = it.childTask, childTitle = it.childName, categoryTitle = it.categoryTitle, hasPremium = hasPremium)
+        logic.serverApiLevelLogic.infoLive.switchMap { serverApiLevel ->
+            pendingTasksToShowLive.map { tasks ->
+                tasks.firstOrNull()?.let {
+                    TaskReviewOverviewItem(
+                        task = it.childTask,
+                        childTitle = it.childName,
+                        categoryTitle = it.categoryTitle,
+                        hasPremium = hasPremium,
+                        childTimezone = TimeZone.getTimeZone(it.childTimezone),
+                        serverApiLevel = serverApiLevel
+                    )
+                }
             }
         }
     }

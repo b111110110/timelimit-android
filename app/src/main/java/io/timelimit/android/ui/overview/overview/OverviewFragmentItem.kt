@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@ import io.timelimit.android.data.model.Device
 import io.timelimit.android.data.model.User
 import io.timelimit.android.data.model.UserType
 import io.timelimit.android.integration.platform.RuntimePermissionStatus
+import io.timelimit.android.logic.ServerApiLevelInfo
+import java.util.*
 
 sealed class OverviewFragmentItem
 object OverviewFragmentHeaderUsers: OverviewFragmentItem()
@@ -41,4 +43,11 @@ sealed class ShowMoreOverviewFragmentItem: OverviewFragmentItem() {
     object ShowAllUsers: ShowMoreOverviewFragmentItem()
     data class ShowMoreDevices(val level: DeviceListItemVisibility): ShowMoreOverviewFragmentItem()
 }
-data class TaskReviewOverviewItem(val task: ChildTask, val childTitle: String, val categoryTitle: String, val hasPremium: Boolean): OverviewFragmentItem()
+data class TaskReviewOverviewItem(
+    val task: ChildTask,
+    val childTitle: String,
+    val categoryTitle: String,
+    val hasPremium: Boolean,
+    val childTimezone: TimeZone,
+    val serverApiLevel: ServerApiLevelInfo
+): OverviewFragmentItem()

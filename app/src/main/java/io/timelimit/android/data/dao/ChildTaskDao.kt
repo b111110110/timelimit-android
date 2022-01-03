@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2020 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ interface ChildTaskDao {
     @Query("SELECT child_task.* FROM child_task JOIN category ON (child_task.category_id = category.id) WHERE category.child_id = :userId")
     fun getTasksByUserIdSync(userId: String): List<ChildTask>
 
-    @Query("SELECT child_task.*, category.title as category_title, user.name as child_name FROM child_task JOIN category ON (child_task.category_id = category.id) JOIN user ON (category.child_id = user.id) WHERE child_task.pending_request = 1")
+    @Query("SELECT child_task.*, category.title as category_title, user.name as child_name, user.timezone AS child_timezone FROM child_task JOIN category ON (child_task.category_id = category.id) JOIN user ON (category.child_id = user.id) WHERE child_task.pending_request = 1")
     fun getPendingTasks(): LiveData<List<FullChildTask>>
 
     @Query("SELECT * FROM child_task WHERE category_id = :categoryId")
