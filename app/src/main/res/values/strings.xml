@@ -32,6 +32,7 @@
     <string name="generic_no">No</string>
     <string name="generic_yes">Yes</string>
     <string name="generic_skip">Skip</string>
+    <string name="generic_show_details">Show details</string>
 
     <string name="generic_swipe_to_dismiss">Swipe to the side to remove this message</string>
     <string name="generic_runtime_permission_rejected">Permission rejected; You can manage permissions in the system settings</string>

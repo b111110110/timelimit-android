@@ -1,5 +1,5 @@
 /*
- * TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+ * TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,13 +22,14 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.Observer
 import io.timelimit.android.R
 import io.timelimit.android.databinding.FragmentPurchaseBinding
 import io.timelimit.android.livedata.liveDataFromNullableValue
 import io.timelimit.android.livedata.mergeLiveData
 import io.timelimit.android.ui.MainActivity
+import io.timelimit.android.ui.diagnose.DiagnoseExceptionDialogFragment
 import io.timelimit.android.ui.main.FragmentWithCustomTitle
+import java.lang.RuntimeException
 
 class PurchaseFragment : Fragment(), FragmentWithCustomTitle {
     private val activityModel: ActivityPurchaseModel by lazy { (activity as MainActivity).purchaseModel }
@@ -87,7 +88,7 @@ class PurchaseFragment : Fragment(), FragmentWithCustomTitle {
                         binding.errorReason = when (fragmentStatus) {
                             PurchaseFragmentErrorBillingNotSupportedByDevice -> getString(R.string.purchase_error_not_supported_by_device)
                             PurchaseFragmentErrorBillingNotSupportedByAppVariant -> getString(R.string.purchase_error_not_supported_by_app_variant)
-                            PurchaseFragmentNetworkError -> getString(R.string.error_network)
+                            is PurchaseFragmentNetworkError -> getString(R.string.error_network)
                             PurchaseFragmentExistingPaymentError -> getString(R.string.purchase_error_existing_payment)
                             PurchaseFragmentServerRejectedError -> getString(R.string.purchase_error_server_rejected)
                             PurchaseFragmentServerHasDifferentPublicKey -> getString(R.string.purchase_error_server_different_key)
@@ -97,6 +98,12 @@ class PurchaseFragment : Fragment(), FragmentWithCustomTitle {
                             is PurchaseFragmentRecoverableError -> true
                             is PurchaseFragmentUnrecoverableError -> false
                         }
+
+                        binding.showErrorDetailsButton = when (fragmentStatus) {
+                            is PurchaseFragmentNetworkError -> true
+                            else -> false
+                        }
+
                         processingPurchaseError = false
                     }
                 }.let { }
@@ -112,6 +119,17 @@ class PurchaseFragment : Fragment(), FragmentWithCustomTitle {
                 } else {
                     model.retry(activityModel)
                 }
+            }
+
+            override fun showErrorDetails() {
+                val status = model.status.value
+
+                val exception = when (status) {
+                    is PurchaseFragmentNetworkError -> status.exception
+                    else -> RuntimeException("other error")
+                }
+
+                DiagnoseExceptionDialogFragment.newInstance(exception).show(parentFragmentManager)
             }
 
             override fun buyForOneMonth() {
@@ -131,6 +149,7 @@ class PurchaseFragment : Fragment(), FragmentWithCustomTitle {
 
 interface PurchaseFragmentHandlers {
     fun retryAtErrorScreenClicked()
+    fun showErrorDetails()
     fun buyForOneMonth()
     fun buyForOneYear()
 }

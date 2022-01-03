@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  TimeLimit Copyright <C> 2019 - 2021 Jonas Lochmann
+  TimeLimit Copyright <C> 2019 - 2022 Jonas Lochmann
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation version 3 of the License.
@@ -29,6 +29,7 @@
     <string name="generic_no">Nein</string>
     <string name="generic_yes">Ja</string>
     <string name="generic_skip">Überspringen</string>
+    <string name="generic_show_details">Details anzeigen</string>
 
     <string name="generic_swipe_to_dismiss">Sie können diesen Hinweis entfernen, indem Sie ihn zur Seite wischen</string>
     <string name="generic_runtime_permission_rejected">Berechtigung abgelehnt; Sie können die Berechtigungen in den Systemeinstellungen verwalten</string>
